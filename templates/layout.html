@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zxx">
+{% load static %}
+{% load custom_filters %}
+{% load widget_tweaks %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ogani Template">
+    <meta name="keywords" content="Ogani, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+    {% block title %}
+        
+    {% endblock  %} | {{companyinfo.name}}
+        </title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+    <link rel="icon" type="image/png" href="{% static 'img/icon/favicon.png' %}">
+    
+
+    
+</head>
+
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Humberger Begin -->
+    <div class="humberger__menu__overlay"></div>
+    <div class="humberger__menu__wrapper">
+        <div class="humberger__menu__logo">
+            <a href="#"><img src="{{companyinfo.logo.url}}" alt=""></a>
+        </div>
+        <div class="humberger__menu__cart">
+            <ul>
+                <li><a href="#"><img src="{% static 'img/notify.svg' %}" style="height:21px;" alt="" srcset=""><span>1</span></a></li>
+                <li><a href="{% url 'wishlist' %}"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+            </ul>
+            <div class="header__cart__price"><span></span></div>
+        </div>
+        <div class="humberger__menu__widget">
+            
+            <div class="header__top__right__auth">
+               {% if request.user.is_authenticated %}
+                    <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}"><i class="fa fa-user"></i> Login</a>
+                {% endif %}
+            </div>
+        </div>
+        <nav class="humberger__menu__nav mobile-menu">
+            <ul>
+                <li class="active"><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="./shop-grid.html">Shop</a></li>
+                <li><a href="#">Aparments</a>
+                    <ul class="header__menu__dropdown">
+                        <li><a href="./shop-details.html">Rent</a></li>
+                        <li><a href="./shoping-cart.html"> Sell</a></li>
+                        <li><a href="./checkout.html">Rooms</a></li>
+                        <li><a href="./blog-details.html">Roommates</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">P€ges</a>
+                    <ul class="header__menu__dropdown">
+                        <li><a href="./shop-details.html">Shop Details</a></li>
+                        <li><a href="./shoping-cart.html">Shoping Cart</a></li>
+                        <li><a href="./checkout.html">Check Out</a></li>
+                        <li><a href="./blog-details.html">Blog Details</a></li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'profile' %}">Blog</a></li>
+                <li><a href="{% url 'contact' %}">Contact</a></li>
+            </ul>
+        </nav>
+        <div id="mobile-menu-wrap"></div>
+        <div class="header__top__right__social">
+           <a href="{{companyinfo.facebook}}" target="_blank"><i class="fa fa-facebook"></i></a>
+            <a href="{{companyinfo.twitter}}" target="_blank"><i class="fa fa-twitter"></i></a>
+            <a href="{{companyinfo.linkedin}}" target="_blank"><i class="fa fa-linkedin"></i></a>
+            <a href="{{companyinfo.pinterest}}" target="_blank"><i class="fa fa-pinterest-p"></i></a>
+        </div>
+        <div class="humberger__menu__contact">
+            <ul>
+                <li><i class="fa fa-envelope"></i> Sajilolist.com</li>
+              
+            </ul>
+        </div>
+    </div>
+    <!-- Humberger End -->
+
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5 col-md-5">
+                        <div class="header__top__left">
+                            <ul>
+                                <li><i class="fa fa-envelope"></i>{{companyinfo.email}}</li>
+                                <li>Looking for Help</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                    <div class="header__top__left">
+                        <ul style="list-style-type: none; padding: 0; display: flex; align-items: center; gap: 20px;">
+
+                            <!-- Location and Country Name -->
+                            <li style="display: inline-flex; align-items: center;">
+                                <i class="fa fa-map-marker-alt" style="margin-right: 8px;"></i>
+                                <span id="countryName">{{country_code}}</span>
+                            </li>
+
+                            <!-- User Name and Photo -->
+                            {% if user.is_authenticated %}
+                            <li style="display: inline-flex; align-items: center; gap: 10px;">
+                                <!-- User's Photo -->
+                               <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'img/logo/users.jpg' %}{% endif %}" 
+                                alt="User Photo" 
+                                style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border:1px dotted tomato;">
+
+
+                                <!-- User's Name -->
+                                <span>{{ request.user.username }}</span>
+                            </li>
+                            {% endif %}
+
+                            <!-- Dropdown Menu -->
+                               <li class="dropdown" style="position: relative;">
+                                    <a href="#" class="header__menu__dropdown post-free-link">
+                                       &nbsp; <i class="fas fa-plus" style="color:white;"></i> Post for free
+                                    </a>
+                                   <ul class="dropdown-menu">
+                                    {% for cat in post_categories %}
+                                        <li><a href="#" class="open-popup"
+                                            data-popup="popup-{{ cat.id }}">{{ cat.name }}</a></li>
+                                    {% endfor %}
+                                    </ul>
+
+
+                                </li>
+                                 
+                            </ul>
+                        </div>
+                    </div>
+                    <script>
+                       document.addEventListener("DOMContentLoaded", function () {
+                            const dropdownToggle = document.querySelector(".post-free-link");
+                            const dropdownMenu = document.querySelector(".dropdown-menu");
+
+                            if (dropdownToggle && dropdownMenu) {
+                                dropdownToggle.addEventListener("click", function (e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    dropdownMenu.classList.toggle("show");
+                                });
+
+                                document.addEventListener("click", function (e) {
+                                    if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                                        dropdownMenu.classList.remove("show");
+                                    }
+                                });
+                            }
+
+                            // Open popup when clicking dropdown items
+                            document.querySelectorAll('.open-popup').forEach(item => {
+                                item.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    const popupId = this.getAttribute('data-popup');
+                                    const popup = document.getElementById(popupId);
+                                    if (popup) {
+                                        popup.style.display = 'flex'; // Show popup (flex to center)
+                                    }
+                                });
+                            });
+
+                            // Close popup when clicking close button
+                            document.querySelectorAll('.popup-form .close-btn').forEach(btn => {
+                                btn.addEventListener('click', function() {
+                                    this.closest('.popup-form').style.display = 'none';
+                                });
+                            });
+
+                            // Also close popup if clicking outside the popup-content
+                            document.querySelectorAll('.popup-form').forEach(popup => {
+                                popup.addEventListener('click', function(e) {
+                                    if (e.target === this) { // Clicked on overlay, not the content
+                                        popup.style.display = 'none';
+                                    }
+                                });
+                            });
+                        });
+
+
+                    </script>
+
+                        
+                    <div class="col-lg-4 col-md-4">
+                        <div class="header__top__right">
+                            <div class="header__top__right__social">
+                                <a href="{{companyinfo.facebook}}" target="_blank"><i class="fa fa-facebook"></i></a>
+                                <a href="{{companyinfo.twitter}}" target="_blank"><i class="fa fa-twitter"></i></a>
+                                <a href="{{companyinfo.linkedin}}" target="_blank"><i class="fa fa-linkedin"></i></a>
+                                <a href="{{companyinfo.pinterest}}" target="_blank"><i class="fa fa-pinterest-p"></i></a>
+                            </div>
+                           
+                            <div class="header__top__right__auth">
+                                {% if request.user.is_authenticated %}
+                                    <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a>
+                                {% else %}
+                                    <a href="{% url 'login' %}"><i class="fa fa-user"></i> Login</a>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a href="{% url 'home' %}"><img src="{{companyinfo.logo.url}}" alt="" style=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul>
+                            <li class="active"><a href="{% url 'home' %}">Home</a></li>
+                            <li><a href="">Shop</a></li>
+                            <li><a href="#">Pages</a>
+                                <ul class="header__menu__dropdown">
+                                    <li><a href="{% url 'shop-details' %}">Shop Details</a></li>
+                                    <li><a href="./shoping-cart.html">Shoping Cart</a></li>
+                                    <li><a href="./checkout.html">Check Out</a></li>
+                                    <li><a href="./blog-details.html">Blog Details</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="">Blog</a></li>
+                            <li><a href="{% url 'contact' %}">Contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+               <div class="col-lg-3">
+                    <div class="header__cart">
+                        <ul>
+                            <li><a href="{% url 'wishlist' %}"><i class="fa fa-heart"></i> <span>{{wishlist_count}}</span></a></li>
+                            <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                            <li><a onclick="showToast()" style="cursor:pointer"><i class="fa fa-envelope"></i> <span>2</span></a></li>
+                            <li><a href="#"><i class="fa fa-bell"></i> <span>5</span></a></li>
+                        </ul>
+
+                        <div class="header__cart__price">
+                            <!-- Show only on small devices -->
+                            <ul style="list-style-type: none; padding: 0; display: flex; align-items: center; gap: 20px;">
+                            <li class="dropdown d-lg-none" style="position: relative;">
+                                <a href="#" class="header__menu__dropdown post-free-link">
+                                    &nbsp; <i class="fas fa-plus" style="color:white;"></i> Post for free
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for cat in post_categories %}
+                                        <li>
+                                            <a href="#" class="open-popup" data-popup="popup-{{ cat.id }}">{{ cat.name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    /* Enable dropdown on hover */
+                    .post-free-link:hover {
+                        background-color: rgb(19, 18, 18);
+                        color: white !important;
+                        text-decoration: none;
+                    }
+
+                    .header__cart__price .dropdown-menu {
+                        display: none;
+                        position: absolute;
+                        background-color: #181818f6;
+                        padding: 10px;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+                        list-style: none;
+                        margin-top: 0.3rem;
+                        border-radius: 8px;
+                        z-index: 1000;
+                    }
+
+                    .header__cart__price .dropdown:hover > .dropdown-menu {
+                        display: block;
+                    }
+
+                    .header__cart__price .dropdown-menu li a {
+                        color: white;
+                        text-decoration: none;
+                        padding: 6px 10px;
+                        display: block;
+                        border-radius: 4px;
+                    }
+
+                    .header__cart__price .dropdown-menu li a:hover {
+                        background-color: #333;
+                        text-decoration: none;
+                    }
+
+                    </style>
+
+
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Header Section End -->
+
+    <!-- Hero Section Begin -->
+    <section class="hero  {% block hero_nav %}{% endblock %} ">
+    
+     </style>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                       <div class="hero__categories__all">
+                            <i class="fa fa-bars" style="color: tomato;"></i>
+                            <span>All Categories</span>
+                        </div>
+                        <ul>
+                            <li><a href="{% url 'realestate_list' %}"><i class="fas fa-building" style="color: tomato;"></i> Real Estate ({{ real_estates_count }})</a></li>
+                            <li><a href="{% url 'books_list' %}"><i class="fas fa-book" style="color: tomato;"></i> Books & Education ({{ books_education_count }})</a></li>
+                            <li><a href="{% url 'health_list' %}"><i class="fas fa-heart" style="color: tomato;"></i> Health & Beauty ({{ health_beauty_count }})</a></li>
+                            {% comment %} <li><a href="#"><i class="fas fa-broom" style="color: tomato;"></i> Household Accessories ({{ household_accessories_count }})</a></li> {% endcomment %}
+                            <li><a href="#"><i class="fas fa-briefcase" style="color: tomato;"></i> Job Vacancies & Careers ({{ jobs_count }})</a></li>
+                            <li><a href="{% url 'automobiles_list' %}"><i class="fas fa-car" style="color: tomato;"></i> Automobiles ({{ automobiles_count }})</a></li>
+                            <li><a href="{% url 'furniture_list' %}"><i class="fas fa-couch" style="color: tomato;"></i> Furniture & Appliances ({{ furniture_appliances_count }})</a></li>
+                            <li><a href="{% url 'pcs_list' %}"><i class="fas fa-desktop" style="color: tomato;"></i> PCs & Peripherals ({{ pcs_peripherals_count }})</a></li>
+                            <li><a href="{% url 'musical_list' %}"><i class="fas fa-guitar" style="color: tomato;"></i> Musical Instruments ({{ musical_instruments_count }})</a></li>
+                            <li><a href="{% url 'mobiles_list' %}"><i class="fas fa-mobile-alt" style="color: tomato;"></i> Mobile Devices & Accessories ({{ mobile_devices_count }})</a></li>
+                            <li><a href="{% url 'electronics_list' %}"><i class="fas fa-plug" style="color: tomato;"></i> Electronics & Appliances ({{ electronics_appliances_count }})</a></li>
+                            <li><a href="{% url 'fashion_list' %}"><i class="fas fa-tshirt" style="color: tomato;"></i> Fashionwear & Add-ons ({{ fashion_wear_count }})</a></li>
+                            <li><a href="{% url 'tools_list' %}"><i class="fas fa-tools" style="color: tomato;"></i> Tools & Machinery ({{ tools_machinery_count }})</a></li>
+                            <li><a href="{% url 'cameras_list' %}"><i class="fas fa-video" style="color: tomato;"></i> Cameras & Accessories ({{ cameras_accessories_count }})</a></li>
+                            {% comment %} <li><a href="#"><i class="fas fa-utensils" style="color: tomato;"></i> Food & Beverages ({{ food_beverages_count }})</a></li> {% endcomment %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form action="#">
+                                <div class="hero__search__categories">
+                                    All Categories
+                                   
+                                    
+                                </div>
+                               
+                                <input type="text" placeholder="What do yo u need?">
+                                <button type="submit" class="site-btn">SEARCH</button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="hero__search__phone__text">
+                                <h5>{{companyinfo.phone}}</h5>
+                                <span>support 24/7 time</span>
+                            </div>
+                        </div>
+                    </div>
+                   {% block Banner %}
+                   
+                   {% endblock %}
+                   
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+
+
+    {% block main_content %}
+    
+    
+    
+    
+    {% endblock %}
+    <!-- Toast Button -->
+
+<!-- Toast Container -->
+<div id="customToast" class="toast-container">
+  <div class="toast-header">
+    <strong class="toast-title">Chats</strong>
+    <small class="toast-time">Just now</small>
+    <span class="toast-close" onclick="hideToast()">×</span>
+  </div>
+  <div class="toast-body">
+    Hello, this is a custom toast message!
+  </div>
+</div>
+
+
+<!-- JavaScript -->
+<script>
+function showToast() {
+  const toast = document.getElementById('customToast');
+  toast.style.display = 'block';
+
+  setTimeout(() => {
+    hideToast();
+  }, 444000); // Auto hide after 4 seconds
+}
+
+function hideToast() {
+  const toast = document.getElementById('customToast');
+  toast.style.display = 'none';
+}
+</script>
+<!-- Footer Section Begin -->
+<footer class="footer spad">
+  <div class="container">
+    <div class="row gy-4">
+
+      <!-- Headquarters Info -->
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="footer__about">
+          <h5>Headquarter</h5>
+          <ul class="list-unstyled">
+            <li><strong>Location:</strong> Boston, Massachusetts</li>
+            <li><strong>Director:</strong> Kevin Shrestha</li>
+            <li>Phone: +977-{{ companyinfo.phone }}</li>
+            <li>Email: {{ companyinfo.email }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Branch Info -->
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="footer__about">
+          <h5>Branch Office</h5>
+          <ul class="list-unstyled">
+            <li><strong>Location:</strong> Kathmandu, Nepal</li>
+            <li><strong>Director:</strong> Vasant ChaW</li>
+            <li>Phone: +977-{{ companyinfo.phone }}</li>
+            <li><strong>Email:</strong> vasantachaw@gmail.com</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Useful Links -->
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="footer__widget">
+          <h6>Useful Links</h6>
+          <div class="d-flex flex-wrap gap-3">
+            <ul class="list-unstyled me-4">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">About Our Shop</a></li>
+              <li><a href="#">Secure Shopping</a></li>
+              <li><a href="#">Delivery Information</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Our Sitemap</a></li>
+            </ul>
+            <ul class="list-unstyled">
+              <li><a href="#">Who We Are</a></li>
+              <li><a href="#">Our Services</a></li>
+              <li><a href="#">Projects</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Innovation</a></li>
+              <li><a href="#">Testimonials</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="footer__widget">
+          <h6>Join Our Newsletter Now</h6>
+          <p>Get E-mail updates about our latest shop and special offers.</p>
+          <form action="#" class="d-flex gap-2 flex-wrap">
+            <input type="text" placeholder="Enter your mail" class="form-" />
+            <button type="submit" class="site-btn btn-dark">Subscribe</button>
+          </form>
+          <div class="footer__widget__social mt-3 d-flex gap-3">
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-instagram"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-pinterest"></i></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Copyright -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 text-center text-md-start">
+          <p class="mb-0">
+            &copy; <script>document.write(new Date().getFullYear());</script>
+            All rights reserved | <strong>Sajilolist</strong> | Made with
+            <i class="fa fa-heart" aria-hidden="true"></i> by
+            <a href="https://colorlib.com" target="_blank" rel="noopener noreferrer">Colorlib</a>
+          </p>
+          <div class="footer__copyright__payment">
+            <img src="{% static 'img/payment-item.png' %}" alt="Payment Methods" style="max-width: 100%; height: auto;" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <!-- Js Plugins -->
+    <!-- jQuery and plugins -->
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slicknav.js' %}"></script>
+    <script src="{% static 'js/mixitup.min.js' %}"></script>
+    <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="{% static 'MainApp/js/scripts.js' %}"></script>
+    {% for cat in post_categories %}
+    {% with form=forms|get_item:cat.id %}
+        <div class="popup-form" id="popup-{{ cat.id }}">
+            <div class="popup-content">
+                <span class="close-btn" onclick="closePopup('{{ cat.id }}')">&times;</span>
+
+                <form method="POST" action="{% url 'create_listing' cat.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group" 
+                            {% if field.name == "image1" or field.name == "image2" or field.name == "image3" or field.name == "image4" or field.name == "image5" or field.name == "image6" or field.name == "image7" or field.name == "image8" or field.name == "image9" or field.name == "image10"   %}
+                            style="display:none;" 
+                            {% endif %}>
+                        
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+                        {% if field.field.widget.input_type == "file" %}
+                            <div class="custom-file-input">
+                            {{ field|add_class:"form-control" }}
+                            </div>
+                        {% else %}
+                            {{ field|add_class:"form-control" }}
+                        {% endif %}
+
+                        {% if field.help_text %}
+                            <small class="form-text">{{ field.help_text }}</small>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                   
+
+                    <!-- Multiple image upload input -->
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="id_images" style="font-weight: bold; color: #444; font-size: 16px;">Upload Multiple Images</label>
+                        <input 
+                            type="file" 
+                            id="id_images" 
+                            name="images" 
+                            multiple 
+                            class="form-control"
+                            accept="image/*"
+                            style="padding: 10px; border: 2px dashed #ccc; border-radius: 10px; cursor: pointer; background-color: #f9f9f9;"
+                        />
+                    </div>
+
+                    <!-- Preview Container -->
+                    <div id="image_preview" style="
+                        display: flex; 
+                        flex-wrap: wrap; 
+                        gap: 10px; 
+                        margin-top: 15px; 
+                        padding: 10px; 
+                        border: 1px solid #ddd; 
+                        border-radius: 10px; 
+                        background-color: #fafafa;
+                        box-shadow: 0 0 8px rgba(0,0,0,0.05);
+                    ">
+                    </div>
+
+
+                    <button type="submit" style="background-color: tomato; color: white; text-transform: uppercase; font-weight: bold;" class="btn btn-primary">
+                        Create
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endwith %}
+{% endfor %}
+<script>
+  document.getElementById('id_images').addEventListener('change', function(event) {
+    const previewContainer = document.getElementById('image_preview');
+    previewContainer.innerHTML = ''; // clear previous previews
+
+    const files = Array.from(event.target.files);
+
+    if (files.length > 10) {
+      alert("You can only upload a maximum of 10 images.");
+      event.target.value = ''; // Reset the file input
+      return;
+    }
+
+    for (const file of files) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.style.width = '100px';
+      img.style.height = '100px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '8px';
+      img.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+      img.style.border = '1px solid #ccc';
+      img.style.padding = '4px';
+      previewContainer.appendChild(img);
+    }
+  });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const mainImage = document.getElementById("mainPreview");
+    const thumbnails = document.querySelectorAll(".thumbnail");
+
+    thumbnails.forEach(thumbnail => {
+           thumbnail.addEventListener("click", function () {
+            const newSrc = this.getAttribute("data-img");
+             mainImage.setAttribute("src", newSrc);
+            });
+        });
+    });
+</script>
+ 
+</body>
+
+</html>

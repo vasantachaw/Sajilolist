@@ -1,0 +1,11 @@
+<li>
+    <a href="#"
+       hx-post="{% url 'toggle_wishlist' product_type product.id %}"
+       hx-swap="outerHTML"
+       hx-target="this"
+       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+       title="{% if in_wishlist %}Remove from wishlist{% else %}Add to wishlist{% endif %}">
+        <i class="fa fa-heart{% if not in_wishlist %}-o{% endif %}"
+           style="color: {% if in_wishlist %}tomato{% else %}black{% endif %}; font-size: 1.2em;"></i>
+    </a>
+</li>

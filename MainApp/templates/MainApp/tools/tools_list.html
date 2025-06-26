@@ -1,0 +1,454 @@
+
+
+{% extends 'layout.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}RealEstate List{% endblock %}
+{% block hero_nav %}hero-normal{% endblock %}
+{% block main_content %}
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breads.jpg' %}">
+        <div class="container" >
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Real Estate</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'home' %}">Home</a>
+                            <a href="">Real Estate</a>
+                            <span>Lists</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    
+    <!-- Product Section Begin -->
+    <section class="product spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-5">
+                    <div class="sidebar">
+                        <form action="{% url 'tools_list' %}" method="GET">
+                            {% csrf_token %}
+                            <input type="hidden" name="country" value="{{ country_filter|default:'' }}">
+
+                            <!-- Price Filter -->
+                            <div class="sidebar__item">
+                                <h4 class="text-muted">Price</h4>
+                                <div class="price-range-wrap">
+                                    <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                        data-min="10" data-max="10000">
+                                        <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                        <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                        <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                    </div>
+                                    <div class="range-slider">
+                                        <div class="price-input">
+                                            <input type="text" id="minamount" name="minamount" value="{{ request.GET.minamount }}">
+                                            <input type="text" id="maxamount" name="maxamount" value="{{ request.GET.maxamount }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    const currencySymbol = "{{ country_currency|default:'$' }}";
+                                </script>
+                            </div>
+
+                            <!-- Filters: Condition, Tool Type, Power Source -->
+                            <div class="sidebar__item sidebar__item__color--option" style="position: relative; overflow: visible; z-index: 1000;">
+                                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                                    
+                                    <!-- Condition Filter -->
+                                    <select name="condition" style="flex: 1; min-width: 140px; {{ select_style }}">
+                                        <option value="" class="text-muted" style="font-size: 0.85rem;">Condition</option>
+                                        {% for value, label in condition_choices %}
+                                            <option value="{{ value }}" {% if request.GET.condition == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Tool Type Filter -->
+                                    <select name="tool_type" style="flex: 1; min-width: 140px; {{ select_style }}">
+                                        <option value="" class="text-muted" style="font-size: 0.85rem;">Tool Type</option>
+                                        {% for value, label in tool_type_choices %}
+                                            <option value="{{ value }}" {% if request.GET.tool_type == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Power Source Filter -->
+                                    <select name="power_source" style="flex: 1; min-width: 140px; {{ select_style }}">
+                                        <option value="" class="text-muted" style="font-size: 0.85rem;">Power Source</option>
+                                        {% for value, label in power_source_choices %}
+                                            <option value="{{ value }}" {% if request.GET.power_source == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div style="width: 100%; margin-top: 0.5rem;">
+                                    <button type="submit"
+                                        style="display: inline-flex; justify-content: center; align-items: center; gap: 8px; 
+                                            padding: 10px 12px; color: gray; width: 100%; font-weight: bold; font-size: 15px; 
+                                            background-color: #f0f0f0; border: none; border-radius: 8px; cursor: pointer; 
+                                            transition: background-color 0.2s ease;">
+                                        <i class="fas fa-filter" style="font-size: 16px; color: tomato;"></i> Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+
+
+                        <div class="sidebar__item">
+                            <div class="latest-product__text">
+                                <h4 class="text-muted">Top Lister – Real Estate</h4>
+                                <div class="latest-product__slider owl-carousel">
+                                   <div class="latest-prdouct__slider__item">
+                                        {% for user_profiles in user_profile %} 
+                                            <a href="#" class="latest-product__item" style="background-color: #f0f0f0; padding:3%;border-radius:10px;">
+                                                <div class="latest-product__item__pic">
+                                                    {% if user_profiles.profile.profile_picture %}
+                                                        <img src="{{ user_profiles.profile.profile_picture.url }}" alt="{{ user_profiles.username }}" style="border-radius:50%; width:60px;height:60px;" />
+                                                    {% else %}
+                                                        <img src="{% static 'images/default.jpg' %}" alt="Default Profile" />
+                                                    {% endif %}
+                                                </div>
+                                                <div class="latest-product__item__text">
+                                                    <h6>{{user_profiles.profile.phone_number}}</h6>
+                                                    <span>{{ user_profiles.first_name|capfirst }} </span> <!-- Replace with dynamic value if needed -->
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+
+                                    {% comment %} <div class="latest-prdouct__slider__item">
+                                        <a href="#" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="img/latest-product/lp-1.jpg" alt="">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>Crab Pool Security</h6>
+                                                <span>$30.00</span>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="img/latest-product/lp-2.jpg" alt="">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>Crab Pool Security</h6>
+                                                <span>$30.00</span>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="img/latest-product/lp-3.jpg" alt="">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>Crab Pool Security</h6>
+                                                <span>$30.00</span>
+                                            </div>
+                                        </a>
+                                    </div> {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-7">
+                    <div class="product__discount">
+                        <div class="section-title product__discount__title">
+                            <h2 class="text-muted">Sale Off</h2>
+                        </div>
+                        <div class="row">
+                            <div class="product__discount__slider owl-carousel">
+                                {% for all_listing  in all_listings %}
+                                {% if all_listing.discount_percentage > 0 %}
+                                <div class="col-lg-4">
+                                    <div class="product__discount__item">
+                                        <div class="product__discount__item__pic set-bg"
+                                            data-setbg="{{all_listing.image1.url}}">
+                                                <div class="product__discount__percent">
+                                                    -{{ all_listing.discount_percentage|floatformat:"0" }}%
+                                                </div>
+                                                <ul class="product__item__pic__hover">
+                                                    <li>
+                                                        {% if user.is_authenticated %}
+                                                            <div 
+                                                                hx-get="{% url 'toggle_wishlist' product_type=all_listing|model_name pk=all_listing.id %}" 
+                                                                hx-trigger="load"
+                                                                hx-target="this"
+                                                                hx-swap="outerHTML">
+                                                            </div>
+                                                        {% else %}
+                                                            <a href="{% url 'login' %}">
+                                                                <i class="fa fa-heart-o" style="color: black; font-size: 1.2em;"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                    </li>
+
+                                                    <!-- Share Button -->
+                                                    <li>
+                                                        <a href="#" class="share-btn"
+                                                        data-title="{{ all_listing.title }}"
+                                                        data-url="{{ request.build_absolute_uri|slice:":-1" }}">
+                                                            <i class="fa fa-share-alt"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                    <a href="{% url 'generic_product_detail' model_name=all_listing|model_name pk=all_listing.id %}">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="product__discount__item__text">
+                                            <span>{{all_listing.listing_type | underscore_to_space }}</span>
+                                            <h5><a href="#">{{all_listing.title}}</a></h5>
+                                            <div class="product__item__price">{{country_currency}}{{all_listing.discount_price}} <span>{{country_currency}}{{all_listing.real_price}}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                   <div class="filter__item">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-5">
+                                <form method="get" id="sortForm">
+                                    <div class="filter__sort">
+                                        <span>Sort By:</span>
+                                        <select name="sort_by" class="form-select text-muted" onchange="document.getElementById('sortForm').submit();">
+                                            <option value="default" {% if request.GET.sort_by == "default" %}selected{% endif %}>Default</option>
+                                            <option value="latest" {% if request.GET.sort_by == "latest" %}selected{% endif %}>Latest</option>
+                                            <option value="price_low_high" {% if request.GET.sort_by == "price_low_high" %}selected{% endif %}>Price: Low to High</option>
+                                            <option value="price_high_low" {% if request.GET.sort_by == "price_high_low" %}selected{% endif %}>Price: High to Low</option>
+                                            <option value="name_asc" {% if request.GET.sort_by == "name_asc" %}selected{% endif %}>Name: A to Z</option>
+                                            <option value="name_desc" {% if request.GET.sort_by == "name_desc" %}selected{% endif %}>Name: Z to A</option>
+                                            <option value="random" {% if request.GET.sort_by == "random" %}selected{% endif %}>Random</option>
+                                            <option value="oldest" {% if request.GET.sort_by == "oldest" %}selected{% endif %}>Oldest</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="filter__found">
+                                    <h6><span>{{ combined_count }}</span> Products found</h6>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-3">
+                                <div class="filter__option">
+                                    <span class="icon_grid-2x2 active" id="listViewBtn" title="List View"></span>
+                                    <span class="icon_ul " id="gridViewBtn" title="Grid View"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row product-list-view list-view" id="productContainer">
+                        {% for tools_machineries in all_listings %}
+                        <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                            <div class="product__item">
+                                <div class="product__item__pic">
+                                    <img src="{{ tools_machineries.image1.url }}" alt="{{ tools_machineries.title }}" class="img-fluid">
+                                    <ul class="product__item__pic__hover">
+                                    <li>
+                                        {% if user.is_authenticated %}
+                                            <div 
+                                                hx-get="{% url 'toggle_wishlist' 'realestate' tools_machineries.id %}"
+                                                hx-trigger="load"
+                                                hx-target="this"
+                                                hx-swap="outerHTML">
+                                                <i class="fa fa-spinner fa-spin" style="color: #ccc;"></i>
+                                            </div>
+                                        {% else %}
+                                            <a href="{% url 'login' %}">
+                                                <i class="fa fa-heart-o" style="color: black; font-size: 1.2em;"></i>
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                    <li>
+                                        <a href="#" class="share-btn"
+                                        data-title="{{ tools_machineries.title }}"
+                                        data-url="{{ request.build_absolute_uri|slice:":-1" }}">
+                                            <i class="fa fa-share-alt"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'generic_product_detail' model_name=tools_machineries|model_name pk=tools_machineries.id %}">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                </div>
+                                <div class="product__item__text">
+                                    <h5>{{ tools_machineries.title }}</h5>
+                                    <h6>
+                                        {{ country_currency }}{{ tools_machineries.discount_price }}
+                                        <del style="color: #999; margin-left: 8px;">{{ country_currency }}{{ tools_machineries.real_price }}</del>
+                                    </h6>
+
+                                    <!-- Grid-only extra info -->
+                                    <div class="extra-details-in-grid">
+                                        <span><i class="fa fa-eye" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Views:</strong> {{ tools_machineries.views }}</span>
+                                        <span><i class="fa fa-map-marker-alt" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Address:</strong> {{ tools_machineries.address }}</span>
+                                        <span><i class="fa fa-info-circle" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Status:</strong> {{ tools_machineries.status | underscore_to_space }}</span>
+                                        <span><i class="fa fa-check-circle" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Condition:</strong> {{ tools_machineries.realestate_condition | underscore_to_space }}</span>
+                                        {% if tools_machineries.brand %}
+                                            <span><i class="fa fa-tag" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Brand:</strong> {{ tools_machineries.brand | underscore_to_space }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p style="text-align: center; padding: 40px 20px; margin: 30px auto; max-width: 500px; font-size: 20px; font-weight: 600; color: gray; border-radius: 12px;">
+                            😕 No listings found.
+                          
+                        </p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- ✅ Styles -->
+                    <style>
+                        .extra-details-in-grid {
+                            display: none;
+                            font-size: 13px;
+                            color: #555;
+                            margin-top: 10px;
+                            flex-wrap: wrap;
+                            gap: 10px;
+                        }
+
+                        .grid-view .extra-details-in-grid {
+                            display: flex;
+                        }
+
+                        .extra-details-in-grid span {
+                            display: inline-block;
+                            white-space: nowrap;
+                            background: #f8f8f8;
+                            padding: 4px 8px;
+                            border-radius: 6px;
+                        }
+
+
+                    @media (max-width: 768px) {
+                        /* Image styling for mobile & tablet */
+                        .product__item__pic img {
+                            max-height: 130px;
+                            object-fit: cover;
+                            margin-bottom: 2px !important; /* reduce bottom space */
+                        }
+
+                        /* Adjust icon area styling */
+                        .product__item__pic__hover {
+                            margin-top: 0 !important; /* remove top margin */
+                            padding-top: 0 !important;
+                            gap: 4px; /* space between icons */
+                        }
+
+                        /* Adjust icons themselves */
+                        .product__item__pic__hover li {
+                            font-size: 12px;
+                            margin: 0;
+                        }
+
+                        /* Text size adjustments */
+                        .product__item__text h5 {
+                            font-size: 14px;
+                        }
+
+                        .product__item__text h6 {
+                            font-size: 13px;
+                        }
+
+                        .extra-details-in-grid span {
+                            font-size: 11px;
+                        }
+
+                        .product__item {
+                            padding: 1px;
+                        }
+                    }
+
+
+                    </style>
+
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const gridBtn = document.getElementById('gridViewBtn');
+                        const listBtn = document.getElementById('listViewBtn');
+                        const container = document.getElementById('productContainer');
+
+                        // Default to list view
+                        container.classList.add('list-view');
+                        container.classList.remove('grid-view');
+                        listBtn.classList.add('active');
+                        gridBtn.classList.remove('active');
+
+                        gridBtn.addEventListener('click', () => {
+                            container.classList.add('grid-view');
+                            container.classList.remove('list-view');
+                            gridBtn.classList.add('active');
+                            listBtn.classList.remove('active');
+                        });
+
+                        listBtn.addEventListener('click', () => {
+                            container.classList.remove('grid-view');
+                            container.classList.add('list-view');
+                            listBtn.classList.add('active');
+                            gridBtn.classList.remove('active');
+                        });
+                    });
+
+                    </script>
+
+
+                    <div class="product__pagination">
+                        {% if combined_listings.has_previous %}
+                            <a href="?page={{ combined_listings.previous_page_number }}{% for key, value in filters.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;</a>
+                        {% endif %}
+
+                        {% for num in combined_listings.paginator.page_range %}
+                            {% if num == 1 or num == combined_listings.paginator.num_pages %}
+                                <a href="?page={{ num }}{% for key, value in filters.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                                {% if num == combined_listings.number %}style="background-color: tomato; color: white; font-weight: bold;"{% endif %}>
+                                {{ num }}
+                                </a>
+                            {% elif num == combined_listings.number|add:"-1" or num == combined_listings.number or num == combined_listings.number|add:"1" %}
+                                <a href="?page={{ num }}{% for key, value in filters.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                                {% if num == combined_listings.number %}style="background-color: tomato; color: white; font-weight: bold;"{% endif %}>
+                                {{ num }}
+                                </a>
+                            {% elif num == combined_listings.number|add:"-2" or num == combined_listings.number|add:"2" %}
+                                <span style="padding: 8px 12px;">...</span>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if combined_listings.has_next %}
+                            <a href="?page={{ combined_listings.next_page_number }}{% for key, value in filters.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;</a>
+                        {% endif %}
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Product Section End -->
+{% endblock %}

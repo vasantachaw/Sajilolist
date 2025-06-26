@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!-- Coding by CodingLab || www.codinglabweb.com -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTP Verification Form</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'auth/css/otp_style.css' %}" />
+    <!-- Boxicons CSS -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <i class="bx bxs-check-shield"></i>
+      </header>
+      <h4>Enter OTP Code</h4>
+      <form method="POST" action="">
+        {% csrf_token %}
+        <div class="input-field">
+          <input type="text" name="otp_digit_1" maxlength="1" required />
+          <input type="text" name="otp_digit_2" maxlength="1" required disabled />
+          <input type="text" name="otp_digit_3" maxlength="1" required disabled />
+          <input type="text" name="otp_digit_4" maxlength="1" required disabled />
+          
+        </div>
+        <button type="submit" disabled>Verify OTP</button>
+      </form>
+    </div>
+
+    <script>
+      const inputs = document.querySelectorAll(".input-field input");
+      const button = document.querySelector("button");
+
+      inputs.forEach((input, index) => {
+        input.addEventListener("keyup", (e) => {
+          const currentInput = input;
+          const nextInput = input.nextElementSibling;
+          const prevInput = input.previousElementSibling;
+
+          // Only allow digits (optional)
+          if (/\D/.test(currentInput.value)) {
+            currentInput.value = "";
+            return;
+          }
+
+          // If more than 1 char, clear it (just in case)
+          if (currentInput.value.length > 1) {
+            currentInput.value = currentInput.value.charAt(0);
+          }
+
+          // Move to next input if current is filled
+          if (currentInput.value !== "" && nextInput) {
+            nextInput.removeAttribute("disabled");
+            nextInput.focus();
+          }
+
+          // If backspace pressed and input empty, move focus back
+          if (e.key === "Backspace") {
+            if (currentInput.value === "" && prevInput) {
+              currentInput.setAttribute("disabled", true);
+              prevInput.focus();
+              prevInput.value = "";
+            }
+          }
+
+          // Enable button only if all inputs have value
+          const allFilled = [...inputs].every(input => input.value !== "");
+          if (allFilled) {
+            button.removeAttribute("disabled");
+            button.classList.add("active");
+          } else {
+            button.setAttribute("disabled", true);
+            button.classList.remove("active");
+          }
+        });
+      });
+
+      // Focus first input on load
+      window.addEventListener("load", () => {
+        inputs[0].focus();
+      });
+    </script>
+  </body>
+</html>

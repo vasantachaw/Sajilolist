@@ -1,0 +1,87 @@
+{% extends "auth/layout.html" %}
+{% load static %}
+{% block title1 %}Login & register{% endblock %}  {% block title2 %}{{companyinfo.name}}{% endblock %}
+{% block form_title %}Login{% endblock %}
+{% block main_content %}
+
+        <!-- LOGIN FORM -->
+       <form action="{% url 'login' %}" method="post" class="login-form" autocomplete="off">
+            {% csrf_token %}
+            
+            <div class="input-box">
+                <input type="tel" class="input-field" id="log-phone" name="phone" required>
+                <label for="log-phone" class="label">Phone</label>
+                <i class='bx bx-phone icon'></i>
+            </div>
+
+            <div class="input-box">
+                <input type="password" class="input-field" id="log-pass" name="password" required>
+                <label for="log-pass" class="label">Password</label>
+                <i class='bx bx-lock-alt icon'></i>
+            </div>
+
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{% url 'forgot-password' %}" class="text-decoration-none">Forgot password?</a>
+            </div>
+
+            <div class="input-box">
+                <button type="submit" class="btn-submit" id="SignInBtn">
+                    Sign In <i class='bx bx-log-in'></i>
+                </button>
+            </div>
+
+            <div class="switch-form">
+                <span>Don't have an account? <a href="#" onclick="registerFunction()">Register</a></span>
+            </div>
+        </form>
+
+        <!-- REGISTER FORM -->
+
+
+       <form action="{% url 'register' %}" method="post" class="register-form" autocomplete="off">
+            {% csrf_token %}
+            
+            <div class="input-box">
+                <input type="text" class="input-field" id="reg-name" name="username" required>
+                <label for="reg-name" class="label">Username</label>
+                <i class='bx bx-user icon'></i>
+            </div>
+
+            <div class="input-box">
+                <input type="tel" class="input-field" id="reg-phone" name="phone" required>
+                <label for="reg-phone" class="label">Phone</label>
+                <i class='bx bx-phone icon'></i>
+            </div>
+
+            <div class="input-box">
+                <input type="password" class="input-field" id="reg-pass" name="password" required>
+                <label for="reg-pass" class="label">Password</label>
+                <i class='bx bx-lock-alt icon'></i>
+            </div>
+
+            <!-- Country Code -->
+            <div style="display: flex; align-items: center; gap: 2rem; margin-top: 1rem;">
+                <h5 style="margin-left:10%; color: rgb(48, 48, 48); font-size: smaller;">Country :</h5>
+
+                <label for="nep" style="display: flex; align-items: center; cursor: pointer; gap: 0.4rem;">
+                    <input type="radio" id="nep" name="country_code" value="+977" required>
+                    <span style="font-size: 0.8rem;">Nepal</span>
+                </label>
+
+                <label for="us" style="display: flex; align-items: center; cursor: pointer; gap: 0.4rem;">
+                    <input type="radio" id="us" name="country_code" value="+1">
+                    <span style="font-size: 0.8rem;">USA</span>
+                </label>
+            </div>
+
+            <div class="input-box">
+                <button class="btn-submit" id="SignUpBtn">Sign Up <i class='bx bx-user-plus'></i></button>
+            </div>
+
+            <div class="switch-form">
+                <span>Already have an account? <a href="#" onclick="loginFunction()">Login</a></span>
+            </div>
+        </form>
+
+
+{% endblock %}

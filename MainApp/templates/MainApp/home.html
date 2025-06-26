@@ -1,0 +1,623 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}Home{% endblock %}
+{% block Banner %}
+ <!-- Slider Container -->
+<!-- Slider Container -->
+<div id="heroSlider" style="position: relative; overflow: hidden; height: 500px;">
+  
+  {% for ad in Ads %}
+    <a href="{{ ad.link }}" target="_blank" class="slide" style="
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 500px;
+      background-image: url('{{ ad.banner.url }}');
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease;
+      z-index: 1;
+      ">
+    </a>
+  {% endfor %}
+
+  <!-- Navigation Arrows -->
+  <button id="prevBtn" style="
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,0.3);
+    color: white;
+    border: none;
+    font-size: 24px;
+    z-index: 3;
+    cursor: pointer;">❮</button>
+
+  <button id="nextBtn" style="
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,0.3);
+    color: white;
+    border: none;
+    font-size: 24px;
+    z-index: 3;
+    cursor: pointer;">❯</button>
+
+  <!-- Dots -->
+  <div id="dots" style="position: absolute; bottom: 20px; width: 100%; text-align: center; z-index: 3;"></div>
+</div>
+
+<!-- JavaScript -->
+<script>
+  const slides = document.querySelectorAll('#heroSlider .slide');
+  const dotsContainer = document.getElementById('dots');
+  let current = 0;
+  let interval;
+  let startX = 0;
+
+  // Initialize Dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dot.style.cssText = "display:inline-block;width:12px;height:12px;margin:0 5px;border-radius:50%;background:#ccc;cursor:pointer;";
+    dot.addEventListener('click', () => {
+      showSlide(i);
+      resetInterval();
+    });
+    dotsContainer.appendChild(dot);
+  });
+
+  const dots = dotsContainer.children;
+
+  // Show Slide
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.style.opacity = i === index ? '1' : '0';
+      slide.style.zIndex = i === index ? '2' : '1';
+    });
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].style.background = i === index ? 'tomato' : '#ccc';
+    }
+    current = index;
+  }
+
+  function nextSlide() {
+    showSlide((current + 1) % slides.length);
+  }
+
+  function prevSlide() {
+    showSlide((current - 1 + slides.length) % slides.length);
+  }
+
+  function resetInterval() {
+    clearInterval(interval);
+    interval = setInterval(nextSlide, 4000);
+  }
+
+  // Automatic Slide
+  interval = setInterval(nextSlide, 4000);
+  showSlide(0);
+
+  // Pause on Hover
+  const heroSlider = document.getElementById('heroSlider');
+  heroSlider.addEventListener('mouseover', () => clearInterval(interval));
+  heroSlider.addEventListener('mouseout', resetInterval);
+
+  // Arrow Controls
+  document.getElementById('nextBtn').onclick = () => { nextSlide(); resetInterval(); };
+  document.getElementById('prevBtn').onclick = () => { prevSlide(); resetInterval(); };
+
+  // Swipe Support
+  heroSlider.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+  heroSlider.addEventListener('touchend', e => {
+    const endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) nextSlide();
+    else if (endX - startX > 50) prevSlide();
+    resetInterval();
+  });
+</script>
+
+{% endblock %}
+{% block main_content %}
+
+
+{% load custom_filters %}
+
+    <!-- Categories Section Begin -->
+    <section class="categories">
+        <div class="container">
+            <div class="section-title product__discount__title">
+                            <h2 class="text-muted">New Listings</h2>
+                        </div>
+            <div class="row">
+                
+                <div class="categories__slider owl-carousel">
+                    
+                    {% for NewlyPosts in newly_posted %}
+                        
+                  
+                        
+                    <div class="col-lg-3">
+                        <div class="categories__item set-bg" data-setbg="{{ NewlyPosts.image1.url}}">
+                            <h5><a href="{% url 'generic_product_detail' model_name=NewlyPosts|model_name pk=NewlyPosts.id %}">{{ NewlyPosts.title}}</a></h5>
+                        </div>
+                    </div>
+                    
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <style>
+   @media (max-width: 768px) {
+    .owl-dots,
+    .owl-nav {
+        display: none !important;
+    }
+}
+
+
+
+    </style>
+   
+    <!-- Product Section Begin -->
+    <section class="product spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-5">
+                    <div class="sidebar">
+                       <form action="{% url 'filter' %}" method="GET">
+                            {% csrf_token %}
+
+                            <!-- Pass detected country (optional) -->
+                            <input type="hidden" name="country" value="{{ country_filter|default:'' }}">
+
+                            <!-- Price Filter -->
+                            <div class="sidebar__item">
+                                <h4 class="text-muted">Price</h4>
+                                <div class="price-range-wrap">
+                                    <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                        data-min="10" data-max="10000">
+                                        <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                        <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                        <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                    </div>
+                                    <div class="range-slider">
+                                        <div class="price-input">
+                                            <input type="text" id="minamount" name="minamount" value="{{ request.GET.minamount }}">
+                                            <input type="text" id="maxamount" name="maxamount" value="{{ request.GET.maxamount }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    const currencySymbol = "{{ country_currency|default:'$' }}";
+                                </script>
+                            </div>
+
+                            <!-- Condition Filter -->
+                            <div class="sidebar__item sidebar__item__color--option">
+                                <h4 class="text-muted">Condition</h4>
+                                <div class="sidebar__item__condition">
+
+                                    <div class="condition-row" style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                                        <div style="flex: 1; position: relative;">
+                                            <input type="radio" id="condition_brand_new" name="condition" value="BRAND_NEW"
+                                                class="condition-input" style="display: none;"
+                                                {% if request.GET.condition == "BRAND_NEW" %}checked{% endif %}>
+                                            <label for="condition_brand_new" class="condition-label">Brand New</label>
+                                        </div>
+                                        <div style="flex: 1; position: relative;">
+                                            <input type="radio" id="condition_like_new" name="condition" value="LIKE_NEW"
+                                                class="condition-input" style="display: none;"
+                                                {% if request.GET.condition == "LIKE_NEW" %}checked{% endif %}>
+                                            <label for="condition_like_new" class="condition-label">Like New</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="condition-row" style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                                        <div style="flex: 1; position: relative;">
+                                            <input type="radio" id="condition_used" name="condition" value="USED"
+                                                class="condition-input" style="display: none;"
+                                                {% if request.GET.condition == "USED" %}checked{% endif %}>
+                                            <label for="condition_used" class="condition-label">Used</label>
+                                        </div>
+                                        <div style="flex: 1; position: relative;">
+                                            <input type="radio" id="condition_not_working" name="condition" value="NOT_WORKING"
+                                                class="condition-input" style="display: none;"
+                                                {% if request.GET.condition == "NOT_WORKING" %}checked{% endif %}>
+                                            <label for="condition_not_working" class="condition-label">Not Working</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="condition-row" style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                                        <div style="flex: 1; position: relative;">
+                                            <input type="radio" id="condition_any" name="condition" value="ANY_CONDITION"
+                                                class="condition-input" style="display: none;"
+                                                {% if request.GET.condition == "ANY_CONDITION" %}checked{% endif %}>
+                                            <label for="condition_any" class="condition-label">Any Condition</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="sidebar__item">
+                                <div class="sidebar__item__size">
+                                    <button type="submit" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; color:gray; width: 100%; font-weight: bold; font-size: 15px; background-color: #f0f0f0; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.2s ease;">
+                                        <i class="fas fa-filter" style="font-size: 16px; color: tomato;"></i> Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="sidebar__item">
+                            <div class="latest-product__text">
+                                <h4 class="text-muted">Top  Rated </h4>
+                                <div class="latest-product__slider owl-carousel">
+                                  <div class="latest-product__slider__item">
+                                     {% for user_review in user_reviews_toped %}
+                                    <a href="{% url 'user_details' user_review.user_profile.username %}" class="latest-product__item"
+                                    style="background-color: #f0f0f0; padding: 1% 1.5%; border-radius: 10px; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 1rem; font-size: 0.85rem;">
+
+                                        <!-- Profile Image -->
+                                        <div class="latest-product__item__pic " style="flex-shrink: 0; margin-left:0.5rem;">
+                                            {% if user_review.user_avatar %}
+                                                <img src="{{ user_review.user_avatar }}" alt="{{ user_review.user_name }}"
+                                                    style="border-radius: 50%; width: 45px; height: 45px; object-fit: cover;">
+                                            {% else %}
+                                                <img src="{% static 'images/default.jpg' %}" alt="Default Profile"
+                                                    style="border-radius: 50%; width: 45px; height: 45px; object-fit: cover;">
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Text Info -->
+                                        <div class="latest-product__item__text" style="flex: 1;">
+                                            <h6 style="font-size: 0.75rem; margin-bottom: 0.15rem;">{{ user_review.user_name }}</h6>
+                                            <p class="mb-0" style="font-size: 0.8rem; margin-top: 0.25rem;">
+                                            {{ user_review.user_profile.profile.phone_number|default:"No Phone" }}
+                                        </p>
+
+                                            <!-- Per-Review Star Rating -->
+                                            <div style="font-size: 0.55rem; color: #555; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                {% for i in "12345" %}
+                                                    {% if user_review.rating|floatformat:1 >= i|add:"0"|floatformat:1 %}
+                                                        <i class="fas fa-star" style="color: tomato;"></i>
+                                                    {% elif user_review.rating|floatformat:1 >= i|add:"-0.5"|floatformat:1 %}
+                                                        <i class="fas fa-star-half-alt" style="color: tomato;"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star" style="color: lightgray;"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <span style="font-size: 0.6rem; color: #333; font-weight: 600;">
+                                                    ({{ user_review.rating }}/5)
+                                                </span>
+                                            </div>
+
+                                         
+
+
+                                        </div>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+
+                                    {% comment %} <div class="latest-prdouct__slider__item">
+                                        <a href="#" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="img/latest-product/lp-1.jpg" alt="">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>Crab Pool Security</h6>
+                                                <span>$30.00</span>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="img/latest-product/lp-2.jpg" alt="">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>Crab Pool Security</h6>
+                                                <span>$30.00</span>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="img/latest-product/lp-3.jpg" alt="">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>Crab Pool Security</h6>
+                                                <span>$30.00</span>
+                                            </div>
+                                        </a>
+                                    </div>  {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-7">
+                    <div class="product__discount">
+                        <div class="section-title product__discount__title">
+                            <h2 class="text-muted">Sale off</h2>
+                        </div>
+                        <div class="row">
+                            <div class="product__discount__slider owl-carousel">
+                                {% for combined_discounts  in combined_discount %}
+                                {% if combined_discounts.discount_percentage > 0 %}
+                                <div class="col-lg-4">
+                                    <div class="product__discount__item">
+                                        <div class="product__discount__item__pic set-bg"
+                                            data-setbg="{{combined_discounts.image1.url}}">
+                                                <div class="product__discount__percent">
+                                                    -{{ combined_discounts.discount_percentage|floatformat:"0" }}%
+                                                </div>
+                                                <ul class="product__item__pic__hover">
+                                                    <li>
+                                                        {% if user.is_authenticated %}
+                                                            <div 
+                                                                hx-get="{% url 'toggle_wishlist' product_type=combined_discounts|model_name pk=combined_discounts.id %}" 
+                                                                hx-trigger="load"
+                                                                hx-target="this"
+                                                                hx-swap="outerHTML">
+                                                            </div>
+                                                        {% else %}
+                                                            <a href="{% url 'login' %}">
+                                                                <i class="fa fa-heart-o" style="color: black; font-size: 1.2em;"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                    </li>
+
+                                                    <!-- Share Button -->
+                                                    <li>
+                                                        <a href="#" class="share-btn"
+                                                        data-title="{{ combined_discounts.title }}"
+                                                        data-url="{{ request.build_absolute_uri|slice:":-1" }}">
+                                                            <i class="fa fa-share-alt"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                    <a href="{% url 'generic_product_detail' model_name=combined_discounts|model_name pk=combined_discounts.id %}">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="product__discount__item__text">
+                                            <span>{{combined_discounts.listing_type | underscore_to_space }}</span>
+                                            <h5><a href="#">{{combined_discounts.title}}</a></h5>
+                                            <div class="product__item__price">{{country_currency}}{{combined_discounts.discount_price}} <span>{{country_currency}}{{combined_discounts.real_price}}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                   <div class="filter__item">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-5">
+                                <form method="get" id="sortForm">
+                                    <div class="filter__sort">
+                                        <span>Sort By:</span>
+                                        <select name="sort_by" class="form-select text-muted" onchange="document.getElementById('sortForm').submit();">
+                                            <option value="default" {% if request.GET.sort_by == "default" %}selected{% endif %}>Default</option>
+                                            <option value="latest" {% if request.GET.sort_by == "latest" %}selected{% endif %}>Latest</option>
+                                            <option value="price_low_high" {% if request.GET.sort_by == "price_low_high" %}selected{% endif %}>Price: Low to High</option>
+                                            <option value="price_high_low" {% if request.GET.sort_by == "price_high_low" %}selected{% endif %}>Price: High to Low</option>
+                                            <option value="name_asc" {% if request.GET.sort_by == "name_asc" %}selected{% endif %}>Name: A to Z</option>
+                                            <option value="name_desc" {% if request.GET.sort_by == "name_desc" %}selected{% endif %}>Name: Z to A</option>
+                                            <option value="random" {% if request.GET.sort_by == "random" %}selected{% endif %}>Random</option>
+                                            <option value="oldest" {% if request.GET.sort_by == "oldest" %}selected{% endif %}>Oldest</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="filter__found">
+                                    <h6><span>{{ combined_count }}</span> Products found</h6>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-3">
+                                <div class="filter__option">
+                                    <span class="icon_grid-2x2 active" id="listViewBtn" title="List View"></span>
+                                    <span class="icon_ul " id="gridViewBtn" title="Grid View"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row product-list-view list-view" id="productContainer">
+                        {% for All_listenings in All_listening %}
+                        <div class="col-6 col-sm-6 col-md-6 col-lg-4">
+                            <div class="product__item">
+                                <div class="product__item__pic">
+                                    <img src="{{ All_listenings.image1.url }}" alt="{{ All_listenings.title }}" class="img-fluid">
+                                    <ul class="product__item__pic__hover">
+                                    <li>
+                                        {% if user.is_authenticated %}
+                                            <div 
+                                                hx-get="{% url 'toggle_wishlist' product_type=All_listenings|model_name pk=All_listenings.id %}" 
+                                                hx-trigger="load"
+                                                hx-target="this"
+                                                hx-swap="outerHTML">
+                                                <i class="fa fa-spinner fa-spin" style="color: #ccc;"></i>
+                                            </div>
+                                        {% else %}
+                                            <a href="{% url 'login' %}">
+                                                <i class="fa fa-heart-o" style="color: black; font-size: 1.2em;"></i>
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                    <li>
+                                        <a href="#" class="share-btn"
+                                        data-title="{{ All_listenings.title }}"
+                                        data-url="{{ request.build_absolute_uri|slice:":-1" }}">
+                                            <i class="fa fa-share-alt"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'generic_product_detail' model_name=All_listenings|model_name pk=All_listenings.id %}">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                </div>
+                                <div class="product__item__text">
+                                    <h5>{{ All_listenings.title }}</h5>
+                                    <h6>
+                                        {{ country_currency }}{{ All_listenings.discount_price }}
+                                        <del style="color: #999; margin-left: 8px;">{{ country_currency }}{{ All_listenings.real_price }}</del>
+                                    </h6>
+
+                                    <!-- Grid-only extra info -->
+                                    <div class="extra-details-in-grid">
+                                        <span><i class="fa fa-eye" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Views:</strong> {{ All_listenings.views }}</span>
+                                        <span><i class="fa fa-map-marker-alt" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Address:</strong> {{ All_listenings.address }}</span>
+                                        <span><i class="fa fa-info-circle" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Status:</strong> {{ All_listenings.status | underscore_to_space }}</span>
+                                        <span><i class="fa fa-check-circle" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Condition:</strong> {{ All_listenings.condition | underscore_to_space }}</span>
+                                        {% if All_listenings.brand %}
+                                            <span><i class="fa fa-tag" aria-hidden="true" style="margin-right: 4px; color: #555;"></i><strong>Brand:</strong> {{ All_listenings.brand | underscore_to_space }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p style="text-align: center; padding: 40px 20px; margin: 30px auto; max-width: 500px; font-size: 20px; font-weight: 600; color: gray; border-radius: 12px;">
+                            😕 No listings found.
+                        </p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- ✅ Styles -->
+                    <style>
+                        .extra-details-in-grid {
+                            display: none;
+                            font-size: 13px;
+                            color: #555;
+                            margin-top: 10px;
+                            flex-wrap: wrap;
+                            gap: 10px;
+                        }
+
+                        .grid-view .extra-details-in-grid {
+                            display: flex;
+                        }
+
+                        .extra-details-in-grid span {
+                            display: inline-block;
+                            white-space: nowrap;
+                            background: #f8f8f8;
+                            padding: 4px 8px;
+                            border-radius: 6px;
+                        }
+
+
+                    @media (max-width: 768px) {
+                        /* Image styling for mobile & tablet */
+                        .product__item__pic img {
+                            max-height: 130px;
+                            object-fit: cover;
+                            margin-bottom: 2px !important; /* reduce bottom space */
+                        }
+
+                        /* Adjust icon area styling */
+                        .product__item__pic__hover {
+                            margin-top: 0 !important; /* remove top margin */
+                            padding-top: 0 !important;
+                            gap: 4px; /* space between icons */
+                        }
+
+                        /* Adjust icons themselves */
+                        .product__item__pic__hover li {
+                            font-size: 12px;
+                            margin: 0;
+                        }
+
+                        /* Text size adjustments */
+                        .product__item__text h5 {
+                            font-size: 14px;
+                        }
+
+                        .product__item__text h6 {
+                            font-size: 13px;
+                        }
+
+                        .extra-details-in-grid span {
+                            font-size: 11px;
+                        }
+
+                        .product__item {
+                            padding: 1px;
+                        }
+                    }
+
+
+                    </style>
+
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const gridBtn = document.getElementById('gridViewBtn');
+                        const listBtn = document.getElementById('listViewBtn');
+                        const container = document.getElementById('productContainer');
+
+                        // Default to list view
+                        container.classList.add('list-view');
+                        container.classList.remove('grid-view');
+                        listBtn.classList.add('active');
+                        gridBtn.classList.remove('active');
+
+                        gridBtn.addEventListener('click', () => {
+                            container.classList.add('grid-view');
+                            container.classList.remove('list-view');
+                            gridBtn.classList.add('active');
+                            listBtn.classList.remove('active');
+                        });
+
+                        listBtn.addEventListener('click', () => {
+                            container.classList.remove('grid-view');
+                            container.classList.add('list-view');
+                            listBtn.classList.add('active');
+                            gridBtn.classList.remove('active');
+                        });
+                    });
+
+                    </script>
+
+
+                    <div class="product__pagination">
+                        {% if All_listening.has_previous %}
+                            <a href="?page={{ All_listening.previous_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">&laquo;</a>
+                        {% endif %}
+
+                        {% for num in All_listening.paginator.page_range %}
+                            {% if num == 1 or num == All_listening.paginator.num_pages or num >= All_listening.number|add:-1 and num <= All_listening.number|add:1 %}
+                                {% if num == All_listening.number %}
+                                    <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" style="background-color: tomato; color: white; font-weight: bold;">{{ num }}</a>
+                                {% else %}
+                                    <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">{{ num }}</a>
+                                {% endif %}
+                            {% elif num == All_listening.number|add:-2 or num == All_listening.number|add:2 %}
+                                <span style="padding: 8px 12px;">...</span>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if All_listening.has_next %}
+                            <a href="?page={{ All_listening.next_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">&raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Blog Section End -->
+{% endblock %}

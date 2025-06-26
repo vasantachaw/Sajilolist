@@ -1,0 +1,603 @@
+
+{% extends 'layout.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}Home{% endblock %}
+{% block hero_nav %}hero-normal{% endblock %}
+{% block main_content %}
+    <!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breads.jpg' %}">
+        <div class="container" >
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Real Estate</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'home' %}">Home</a>
+                            <a href="">Real Estate </a>
+                            <span>{{product.listing_type | underscore_to_space }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    
+    <!-- Product Details Section Begin -->
+    <section class="product-details spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="product__details__pic">
+                        <!-- Main Large Image -->
+                        <div class="product__details__pic__item">
+                            <img id="mainPreview" class="product__details__pic__item--large" src="{{ product.image1.url }}" alt="Main Image">
+                        </div>
+
+                        <!-- Thumbnails -->
+                        <div class="product__details__pic__slider owl-carousel">
+                            {% if product.image2 %}
+                            <img class="thumbnail" data-img="{{ product.image2.url }}" src="{{ product.image2.url }}" alt="Thumbnail 2">
+                            {% endif %}
+                            {% if product.image3 %}
+                            <img class="thumbnail" data-img="{{ product.image3.url }}" src="{{ product.image3.url }}" alt="Thumbnail 3">
+                            {% endif %}
+                            {% if product.image4 %}
+                            <img class="thumbnail" data-img="{{ product.image4.url }}" src="{{ product.image4.url }}" alt="Thumbnail 4">
+                            {% endif %}
+                            {% if product.image5 %}
+                            <img class="thumbnail" data-img="{{ product.image5.url }}" src="{{ product.image5.url }}" alt="Thumbnail 5">
+                            {% endif %}
+                            {% if product.image6 %}
+                            <img class="thumbnail" data-img="{{ product.image6.url }}" src="{{ product.image6.url }}" alt="Thumbnail 6">
+                            {% endif %}
+                            {% if product.image7 %}
+                            <img class="thumbnail" data-img="{{ product.image7.url }}" src="{{ product.image7.url }}" alt="Thumbnail 7">
+                            {% endif %}
+                            {% if product.image8 %}
+                            <img class="thumbnail" data-img="{{ product.image8.url }}" src="{{ product.image8.url }}" alt="Thumbnail 8">
+                            {% endif %}
+                            {% if product.image9 %}
+                            <img class="thumbnail" data-img="{{ product.image9.url }}" src="{{ product.image9.url }}" alt="Thumbnail 9">
+                            {% endif %}
+                            {% if product.image10 %}
+                            <img class="thumbnail" data-img="{{ product.image10.url }}" src="{{ product.image10.url }}" alt="Thumbnail 10">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__text">
+                    <h3>{{ product.title }}</h3>
+
+                    <!-- Rating and Views -->
+                    <div class="product__details__rating" style="display: flex; align-items: center; gap: 20px; font-size: 16px; margin-bottom: 10px;">
+                        <!-- Rating Section -->
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="color: #555;">{{ product.listed_date|time_since_simple }}</span>
+                        </div>
+
+                        <!-- Views Section -->
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <i class="fa fa-eye" style="font-size: 18px; color: gray;"></i>
+                            <span style="color: #555;">{{ product.views }} Views</span>
+                        </div>
+                    </div>
+
+                    <!-- Price and Discount -->
+                    <div class="product__details__price" style="color: green; font-size: 22px; margin-bottom: 15px;">
+                        ${{ product.discount_price }} &nbsp;&nbsp;&nbsp;
+                        <span class="text-muted" style="text-decoration: line-through; color: #888;">${{ product.real_price }}</span>
+                    </div>
+                    <hr>
+                    <!-- User Info Card -->
+                 {% if product.listed_by.is_superuser %}
+                    <div style="display: inline-flex; align-items: center; border: 1px solid #ddd; padding: 10px 16px; margin-bottom: 20px; gap: 12px;">
+                        <img src="{{ companyinfo.logo.url }}" alt="Company Logo"
+                            style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <!-- Company Name with Reviews and Rating inline -->
+                            <div style="display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <span style="font-weight: 600;">
+                                   &nbsp;&nbsp;&nbsp; {{ companyinfo.name | capfirst }}
+                                </span>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <i class="fa fa-star" style="color: gold;"></i>
+                                    <i class="fa fa-star" style="color: gold;"></i>
+                                    <i class="fa fa-star-half-o" style="color: gold;"></i>
+                                    <span style="color: #555;">(18 reviews)</span>
+                                </div>
+                            </div>
+
+                            <!-- Company Phone and Address inline -->
+                            <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #555;">
+                                <span>{{ companyinfo.phone }}</span>
+                                <span>•</span>
+                                <span>{{ companyinfo.address }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div style="display: inline-flex; align-items: center; border: 1px solid #ddd; padding: 10px 16px; margin-bottom: 20px; gap: 12px;">
+                        <img src="{{ product.listed_by.profile.get_profile_picture }}" alt="Profile Picture"
+                            style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <!-- Name with Reviews and Rating inline -->
+                            <div style="display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <span style="font-weight: 600;">
+                                    {{ product.listed_by.first_name | capfirst }} {{ product.listed_by.last_name | capfirst }}
+                                </span>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <i class="fa fa-star" style="color: gold;"></i>
+                                    <i class="fa fa-star" style="color: gold;"></i>
+                                    <i class="fa fa-star-half-o" style="color: gold;"></i>
+                                    <span style="color: #555;">(18 reviews)</span>
+                                </div>
+                            </div>
+
+                            <!-- Phone number and Address inline -->
+                            <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; color: #555;">
+                                <span>{{ product.listed_by.profile.phone_number }}</span>
+                                <span>•</span>
+                                <span>{{ product.listed_by.profile.address }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% endif %}
+
+                    <hr>
+                    <!-- Buttons -->
+                    <div style="margin-bottom: 20px;">
+                        <a href="#" class="primary-btn">
+                            <i class="fa fa-share-alt me-1"></i> Share
+                        </a>
+                        <a href="#" class="primary-btn">
+                            <i class="fa fa-comments"></i> Chat
+                        </a>
+                        <a href="#" class="heart-icon" style="color: tomato; font-size: 20px;">
+                            <span class="icon_heart_alt"></span>
+                        </a>
+                    </div>
+
+                    <!-- Property Details -->
+                    <ul>
+                        <li><b>Status:</b> <span>{% with red_statuses="sold rented not_available sold_sajilolist sold_elsewhere" %}
+                            {% if product.status in red_statuses.split %}
+                                <span style="color:tomato; font-weight: bold;">
+                                {{ product.get_status_display }}
+                                </span>
+                            {% else %}
+                                <span style="color:green;">
+                                {{ product.get_status_display }}
+                                </span>
+                            {% endif %}
+                            {% endwith %}
+                            </span>
+                        </li>
+                        <li><b>Type:</b> <span>{{product.listing_type | underscore_to_space }}</span></li>
+                        <li><b>Condition:</b> <span>{{product.realestate_condition | underscore_to_space }}</span></li>
+                        <li><b>Address:</b> <span>{{product.address}}</span></li>
+                        <li>
+                            <b>Share on:</b>
+                            <div class="share" style="margin-top: 5px;">
+                            <!-- Facebook Share -->
+                            <a href="https://www.facebook.com/sharer/sharer.php?u=https://example.com" target="_blank">
+                                <i class="fa fa-facebook"></i>
+                            </a>
+
+                            <!-- Twitter Share -->
+                            <a href="https://twitter.com/intent/tweet?url=https://example.com&text=Check+this+out!" target="_blank">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+
+                            <!-- Instagram (does not support direct sharing via link) -->
+                            <a href="https://www.instagram.com/" target="_blank" title="Open Instagram">
+                                <i class="fa fa-instagram"></i>
+                            </a>
+
+                            <!-- Pinterest Share -->
+                            <a href="https://pinterest.com/pin/create/button/?url=https://example.com&media=https://example.com/image.jpg&description=Check+this+product" target="_blank">
+                                <i class="fa fa-pinterest"></i>
+                            </a>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-12">
+            <div class="product__details__tab">
+                <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab" aria-selected="true">Description</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab" aria-selected="false">Comments <span>(1)</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab" aria-selected="false">Location </a>
+                </li>
+                </ul>
+                <div class="tab-content">
+                <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                    <div class="product__details__tab__desc">
+                    <h6>Description</h6>
+                    <p>{{product.description | safe }}</p>
+                    </div>
+                </div>
+
+               <div class="tab-pane" id="tabs-2" role="tabpanel">
+                <div class="product__details__tab__desc">
+                    <h6>Comments</h6>
+                    <div id="commentSection">
+                        {% for comment in comments %}
+                        <div style="margin-bottom: 15px;" data-comment-id="{{ comment.id }}">
+                            <div style="display: flex; align-items: flex-start;">
+                                <img src="{{ comment.user_avatar }}" alt="User avatar" style="width:36px; height:36px; border-radius:50%; margin-right:10px;">
+                                <div style="background: #f0f2f5; padding:10px 15px; border-radius:18px; max-width:85%;">
+                                    <strong>{{ comment.user_name }}</strong>
+                                    <p>{{ comment.text }}</p>
+                                    <small class="timestamp" data-time="{{ comment.created_at|date:'c' }}"></small><br>
+                                    <button onclick="showReplyBox(this, {{ comment.id }})" style="background:none; border:none; color:#1877f2; cursor:pointer;">Reply</button>
+                                </div>
+                            </div>
+
+                            <!-- Replies -->
+                            {% for reply in comment.replies.all %}
+                            <div style="margin-left: 40px; margin-top: 10px;" data-comment-id="{{ reply.id }}">
+                                <div style="display: flex; align-items: flex-start;">
+                                    <img src="{{ reply.user_avatar }}" alt="User avatar" style="width:36px; height:36px; border-radius:50%; margin-right:10px;">
+                                    <div style="background: #f0f2f5; padding:10px 15px; border-radius:18px; max-width:85%;">
+                                        <strong>{{ reply.user_name }}</strong>
+                                        <p>{{ reply.text }}</p>
+                                        <small class="timestamp" data-time="{{ reply.created_at|date:'c' }}"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% empty %}
+                        <p>No comments yet.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Comment Box -->
+                    <div style="width: 100%; box-shadow: 0 1px 4px rgba(0,0,0,0.12); border-radius:8px; background:#fff; margin-top:20px;">
+                        <div style="padding:10px 15px; border-top:1px solid #ddd;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="{{ user.profile.profile_picture.url }}" alt="User Avatar" style="width:36px; height:36px; border-radius:50%; margin-right:10px;">
+                                <div style="flex: 1; position: relative;">
+                                    <input id="commentInput" placeholder="Write a comment..." autocomplete="off"
+                                        oninput="checkInput()" onkeydown="handleKeyDown(event)"
+                                        style="width:100%; border-radius:20px; border:1px solid #ccd0d5; padding:10px 100px 10px 15px; font-size:0.95rem; outline:none; transition:border-color 0.3s ease;"
+                                        onfocus="this.style.borderColor='tomato'; this.style.boxShadow='0 0 5px rgba(255, 99, 71, 0.5)';"
+                                        onblur="this.style.borderColor='#ccd0d5'; this.style.boxShadow='none';"
+                                    />
+                                    <button id="postBtn" onclick="postComment()" disabled
+                                        style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:tomato; border:none; color:#fff; padding:6px 12px; font-weight:700; width:80px; border-radius:15px; cursor:pointer; font-size:0.9rem;">
+                                        Post
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reply Box Template (hidden initially) -->
+                    <template id="replyTemplate">
+                        <div style="margin-left: 40px; margin-top: 10px;">
+                            <div style="display:flex; align-items:center;">
+                                <img src="{{ user.profile.profile_picture.url }}" alt="User Avatar" style="width:36px; height:36px; border-radius:50%; margin-right:10px;">
+                                <div style="flex:1; position:relative;">
+                                    <input class="replyInput" placeholder="Write a reply..." autocomplete="off"
+                                        style="width:100%; border-radius:20px; border:1px solid #ccd0d5; padding:10px 80px 10px 15px; font-size:0.9rem;">
+                                    <button class="replyBtn"
+                                        style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:tomato; color:#fff; border:none; padding:6px 12px; font-size:0.85rem; border-radius:15px; cursor:pointer;">
+                                        Reply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                   <script>
+                        const commentInput = document.getElementById('commentInput');
+                        const postBtn = document.getElementById('postBtn');
+                        const commentSection = document.getElementById('commentSection');
+                        const productId = "{{ product.id }}";
+
+                        function checkInput() {
+                            postBtn.disabled = commentInput.value.trim() === '';
+                        }
+
+                        function handleKeyDown(e) {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            if (!postBtn.disabled) postComment();
+                            }
+                        }
+
+                        function getCSRFToken() {
+                            const name = 'csrftoken';
+                            const cookies = document.cookie.split(';');
+                            for (let cookie of cookies) {
+                            const c = cookie.trim();
+                            if (c.startsWith(name + '=')) {
+                                return decodeURIComponent(c.substring(name.length + 1));
+                            }
+                            }
+                            return '';
+                        }
+
+                        // Load existing comments on page load
+                        function loadComments() {
+                            fetch("{% url 'realestate_comments' product_id=product.id %}")
+                            .then(res => res.json())
+                            .then(data => {
+                                commentSection.innerHTML = '';
+                                if (data.success && data.comments.length > 0) {
+                                data.comments.forEach(comment => renderCommentFromData(comment));
+                                updateTimestamps();
+                                } else {
+                                commentSection.innerHTML = '<p>No comments yet.</p>';
+                                }
+                            })
+                            .catch(() => {
+                                commentSection.innerHTML = '<p>Error loading comments.</p>';
+                            });
+                        }
+
+                        // Recursive rendering of comment and nested replies
+                        function renderCommentFromData(comment, isReply = false) {
+                            const wrapper = document.createElement('div');
+                            wrapper.dataset.commentId = comment.id;
+                            wrapper.style.marginTop = isReply ? '10px' : '15px';
+                            wrapper.style.marginLeft = isReply ? '40px' : '0';
+
+                            wrapper.innerHTML = `
+                            <div style="display:flex; align-items:flex-start;">
+                                <img src="${comment.user_avatar}" alt="User Avatar" style="width:36px; height:36px; border-radius:50%; margin-right:10px;">
+                                <div style="background: #f0f2f5; padding:10px 15px; border-radius:18px; max-width:85%;">
+                                <strong>${comment.user_name}</strong>
+                                <p>${comment.text}</p>
+                                <small class="timestamp" data-time="${comment.created_at}"></small><br>
+                                <button onclick="showReplyBox(this, ${comment.id})" style="background:none; border:none; color:#1877f2; cursor:pointer;">Reply</button>
+                                </div>
+                            </div>
+                            `;
+
+                            if (isReply) {
+                            // Append reply inside parent comment container
+                            const parentEl = document.querySelector(`[data-comment-id="${comment.parent_id}"]`);
+                            if (parentEl) {
+                                parentEl.appendChild(wrapper);
+                            } else {
+                                // If no parent found, fallback to append to main comment section
+                                commentSection.appendChild(wrapper);
+                            }
+                            } else {
+                            commentSection.appendChild(wrapper);
+                            }
+
+                            // Render nested replies
+                            if (comment.replies && comment.replies.length > 0) {
+                            comment.replies.forEach(reply => {
+                                // Attach parent_id to reply for correct indentation
+                                reply.parent_id = comment.id;
+                                renderCommentFromData(reply, true);
+                            });
+                            }
+                        }
+
+                        // Post new comment or reply
+                        function postComment(parentId = null, inputEl = commentInput) {
+                            const text = inputEl.value.trim();
+                            if (!text) return;
+
+                            fetch("{% url 'realestate_comments' product_id=product.id %}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken(),
+                            },
+                            body: JSON.stringify({
+                                text,
+                                parent_id: parentId,
+                            }),
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                const name = "{{ user.get_full_name|default:user.username }}";
+                                const avatar = "{{ user.profile.profile_picture.url }}";
+                                const commentId = data.comment_id;
+
+                                // Render new comment or reply dynamically
+                                const newComment = {
+                                    id: commentId,
+                                    user_name: name,
+                                    user_avatar: avatar,
+                                    text: text,
+                                    created_at: new Date().toISOString(),
+                                    replies: [],
+                                    parent_id: parentId
+                                };
+                                renderCommentFromData(newComment, !!parentId);
+
+                                inputEl.value = '';
+                                checkInput();
+
+                                // Remove reply box if posting a reply
+                                if (parentId && inputEl.classList.contains('replyInput')) {
+                                    inputEl.parentElement.parentElement.remove();
+                                }
+                                } else {
+                                alert(data.error || 'Error posting comment');
+                                }
+                            })
+                            .catch(() => alert('Network error. Please try again.'));
+                        }
+
+                        // Show reply input box under a comment
+                        function showReplyBox(button, commentId) {
+                            if (button.parentNode.querySelector('.replyInput')) return;
+
+                            const template = document.getElementById('replyTemplate');
+                            const clone = template.content.cloneNode(true);
+                            const input = clone.querySelector('.replyInput');
+                            const btn = clone.querySelector('.replyBtn');
+
+                            btn.onclick = () => postComment(commentId, input);
+                            button.parentNode.parentNode.appendChild(clone);
+                            input.focus();
+                        }
+
+                        // Convert ISO date to relative time string
+                        function timeSince(date) {
+                            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+                            const intervals = {
+                            year: 31536000,
+                            month: 2592000,
+                            week: 604800,
+                            day: 86400,
+                            hour: 3600,
+                            minute: 60,
+                            second: 1
+                            };
+                            for (let unit in intervals) {
+                            const count = Math.floor(seconds / intervals[unit]);
+                            if (count >= 1) return `${count} ${unit}${count > 1 ? 's' : ''} ago`;
+                            }
+                            return 'Just now';
+                        }
+
+                        // Update all timestamps on the page
+                        function updateTimestamps() {
+                            document.querySelectorAll('.timestamp').forEach(el => {
+                            const iso = el.dataset.time;
+                            if (iso) el.textContent = timeSince(iso);
+                            });
+                        }
+
+                        document.addEventListener('DOMContentLoaded', () => {
+                            loadComments();
+                            checkInput();
+                        });
+
+                        setInterval(updateTimestamps, 60000);
+                        </script>
+
+                    </div>
+                </div>
+
+
+                <div class="tab-pane" id="tabs-3" role="tabpanel">
+                    <div class="product__details__tab__desc">
+                    <h6>Location</h6>
+                    <div class="map">
+                        <iframe
+                            width="600" height="300" style="border:0;"
+                            loading="lazy" allowfullscreen
+                            src="https://www.google.com/maps?q={{ product.address|urlencode }}&output=embed">
+                        </iframe>
+
+                        <div class="map-inside">
+                            <i class="icon_pin"></i>
+                            <div class="inside-widget">
+                              
+                                <ul style="list-style: none; padding-left: 0;">
+                                    <li style="display: inline-flex; align-items: center; margin-bottom: 6px;">
+                                        {{ product.address }}
+                                    </li>&nbsp;&nbsp;|
+                                    <li style="display: inline-flex; align-items: center;">
+                                        {{ product.listed_by.profile.country }} - {{ product.listed_by.profile.phone_number }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- Product Details Section End -->
+    
+    <!-- Related Product Section Begin -->
+    <section class="related-product">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title related__product__title">
+                        <h2 class = "text-muted">Related</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% for real_estates in real_estate|slice:":4" %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg" data-setbg="{{ real_estates.image1.url }}">
+                            <ul class="product__item__pic__hover">
+                               <li>
+                                    {% if user.is_authenticated %}
+                                            <div 
+                                                hx-get="{% url 'toggle_wishlist' 'realestate' real_estates.id %}"
+                                                hx-trigger="load"
+                                                hx-target="this"
+                                                hx-swap="outerHTML">
+                                                <i class="fa fa-spinner fa-spin" style="color: #ccc;"></i>
+                                            </div>
+                                        {% else %}
+                                            <a href="{% url 'login' %}">
+                                                <i class="fa fa-heart-o" style="color: black; font-size: 1.2em;"></i>
+                                            </a>
+                                    {% endif %}
+                                </li>
+
+                                <!-- SHARE BUTTON -->
+                                <li>
+                                    <a href="#" class="share-btn"
+                                    data-title="{{ real_estates.title }}"
+                                    data-url="{{ request.build_absolute_uri|slice:":-1" }}">
+                                        <i class="fa fa-share-alt"></i>
+                                    </a>
+                                </li>
+
+                                <!-- DETAIL VIEW -->
+                                <li>
+                                   <a href="{% url 'generic_product_detail' 'realestate' real_estates.id %}">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="product__item__text">
+                            <h6><a href="#">{{real_estates.title}}</a></h6>
+                            <h5>${{real_estates.discount_price}}</h5>
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- Place this where you want the "More" button, for example, below your listings -->
+                
+            </div>
+            <div class="more-button-container" style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'realestate_list' %}?page={{ next_page_number }}" style="display: inline-block; padding: 10px 20px; background-color:rgb(240, 243, 247); color: #333; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                More Listings
+            </a>
+            </div>
+
+        </div>
+    </section>
+    <!-- Related Product Section End -->
+
+{% endblock %}

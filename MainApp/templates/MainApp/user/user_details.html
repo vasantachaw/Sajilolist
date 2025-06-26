@@ -1,0 +1,615 @@
+
+{% extends 'layout.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %} User Profile{% endblock %}
+{% block hero_nav %}hero-normal{% endblock %}
+{% block main_content %}
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/userss.jpg' %}">
+        <div class="container" >
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2 class="text-light">  User Profile</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'home' %}">Home</a>
+                            <a href="">User</a>
+                            <span>{{profile_user.username}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    
+    <!-- Product Section Begin -->
+    <section class="product spad">
+        <div class="container">
+            <div class="row">
+               <div class="col-lg-3 col-md-5">
+                    <div class="sidebar">
+                        <!-- User details sidebar (no outer form) -->
+                        <!-- User Profile Sidebar -->
+                        <div class="sidebar__item mb-4">
+                            <h4 class="text-muted mb-3">
+                                <strong class="d-block text-truncate" style="max-width: 100%;">
+                                    {{ profile_user.first_name|capfirst }} {{ profile_user.last_name|capfirst }}
+                                </strong>
+                            </h4>
+                            <div class="d-flex align-items-center gap-3 flex-wrap">
+                                <div style="flex-shrink: 0;">
+                                    {% if profile_user.profile.profile_picture %}
+                                        <img src="{{ profile_user.profile.profile_picture.url }}" alt="{{ profile_user.username }}"
+                                            class="rounded-circle"
+                                            style="width: 70px; height: 70px; object-fit: cover; border: 1px solid tomato;">
+                                    {% else %}
+                                        <img src="{% static 'images/default.jpg' %}" alt="Default Profile"
+                                            class="rounded-circle"
+                                            style="width: 70px; height: 70px; object-fit: cover;">
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 min-w-0">
+                                    <small class="text-muted d-block text-truncate fs-5" style="max-width: 100%;">
+                                        &nbsp;&nbsp;<i class="fa-solid fa-location-dot me-1"></i> {{ profile_user.profile.address|default:"No address" }}
+                                    </small>
+                                    <small class="text-muted d-block text-truncate" style="max-width: 100%;">
+                                        &nbsp;&nbsp;<i class="fa-solid fa-phone me-1"></i> {{ profile_user.profile.phone_number|default:"No phone" }}
+                                    </small>
+                                    <small class="text-muted d-block text-truncate" style="max-width: 100%;">
+                                        &nbsp;&nbsp;<i class="fa-solid fa-envelope me-1"></i> {{ profile_user.email }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rating Stars -->
+                        <div class="d-flex justify-content-center">
+                        <div class="d-flex align-items-center" style="font-size: 0.85rem; color: black;">
+
+                            {% if total_reviews > 0 %}
+                                <!-- Full Stars -->
+                                {% for _ in ""|ljust:full_stars %}
+                                    <i class="fas fa-star" style="color: tomato;"></i>
+                                {% endfor %}
+
+                                <!-- Half Star -->
+                                {% if half_star %}
+                                    <i class="fas fa-star-half-alt" style="color: tomato;"></i>
+                                {% endif %}
+
+                                <!-- Empty Stars -->
+                                {% for _ in ""|ljust:empty_stars %}
+                                    <i class="far fa-star" style="color: lightgray;"></i>
+                                {% endfor %}
+
+                                <!-- Average Rating -->
+                                <span class="text-dark ms-1" style="font-size: 0.75rem;">&nbsp;({{ average_rating }}/5)</span>
+
+                            {% else %}
+                                <!-- Default: All Empty Stars -->
+                                {% for _ in "12345" %}
+                                    <i class="far fa-star" style="color: lightgray;"></i>
+                                {% endfor %}
+                                <span class="text-dark ms-1" style="font-size: 0.75rem;">&nbsp;(No ratings yet)</span>
+                            {% endif %}
+
+                            <!-- Spacer -->
+                            <div class="mx-3"></div>
+
+                            <!-- Total Reviews -->
+                            <!-- Trigger -->
+                            <span onclick="document.getElementById('reviewModal').style.display='flex'" style="cursor: pointer;">
+                                <i class="fas fa-comment-dots me-1" style="color: tomato;"></i>
+                                <span class="text-dark" style="font-size: 0.75rem;">&nbsp;({{ total_reviews }})</span>
+                            </span>
+
+
+                            <!-- Inline CSS Modal -->
+                            <div id="reviewModal"
+                                style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
+                                        background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center;">
+
+                                <div onclick="event.stopPropagation()"
+                                    style="background-color: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 600px;
+                                            max-height: 90vh; overflow-y: auto; position: relative;">
+
+                                    <!-- Close Button -->
+                                    <span onclick="document.getElementById('reviewModal').style.display='none'"
+                                        style="position: absolute; top: 10px; right: 15px; font-size: 1.5rem; font-weight: bold;
+                                                color: #555; cursor: pointer;">&times;</span>
+
+                                    <!-- Modal Title -->
+                                    <h5 style="margin-bottom: 1rem;">
+                                     Reviews ({{ total_reviews }})
+                                    </h5>
+
+                                    <!-- Reviews Loop -->
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        {% for user_review in comments %}
+                                            <div style="margin-bottom: 1rem; background: #f4f4f4; padding: 10px; border-radius: 8px;">
+                                                <div style="display: flex; gap: 10px; align-items: center;">
+                                                    <img src="{{ user_review.user_avatar }}"
+                                                        alt="{{ user_review.user_name }}"
+                                                        style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                                    <strong style="font-size: 0.85rem;">{{ user_review.user_name }}</strong>
+                                                </div>
+
+                                                <!-- Star Rating -->
+                                                <div style="font-size: 0.75rem; margin-top: 5px;">
+                                                    {% for i in "12345" %}
+                                                        {% if user_review.rating|floatformat:1 >= i|add:"0"|floatformat:1 %}
+                                                            <i class="fas fa-star" style="color: tomato;"></i>
+                                                        {% elif user_review.rating|floatformat:1 >= i|add:"-0.5"|floatformat:1 %}
+                                                            <i class="fas fa-star-half-alt" style="color: tomato;"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star" style="color: lightgray;"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    <span style="margin-left: 5px;">({{ user_review.rating }}/5)</span>
+                                                </div>
+
+                                                <!-- Review Text -->
+                                                <p style="font-size: 0.85rem; margin-top: 5px;">
+                                                    {{ user_review.text|truncatewords:30 }}
+                                                </p>
+                                            </div>
+                                        {% empty %}
+                                            <p>No reviews yet.</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                            window.onclick = function(event) {
+                                var modal = document.getElementById('reviewModal');
+                                if (event.target === modal) {
+                                    modal.style.display = "none";
+                                }
+                            }
+                            </script>
+
+
+                        </div>
+                        </div><br>
+
+
+                        <!-- Action Links -->
+                        <div class="d-flex justify-content-center gap-3 flex-wrap mb-2" style="font-size: 13px;">
+                            <a href="#" id="openModal" class="text-decoration-none text-muted d-inline-flex align-items-center gap-2">
+                                <i class="fas fa-star" style="font-size: 13px; color: tomato;"></i>&nbsp; User Rate &nbsp;&nbsp;
+                            </a>
+                            <a href="#" class="text-decoration-none text-muted d-inline-flex align-items-center gap-2">
+                                <i class="fas fa-user-edit" style="font-size: 13px; color: tomato;"></i>&nbsp; Edit Profile &nbsp;&nbsp;
+                            </a>
+                            <a href="#" class="text-decoration-none text-muted d-inline-flex align-items-center gap-2">
+                                <i class="fas fa-envelope" style="font-size: 13px; color: tomato;"></i>&nbsp; Contact
+                            </a>
+                        </div>
+
+
+                        <!-- Modal -->
+                        <div id="modal" style="
+                            display: none;
+                            position: fixed;
+                            inset: 0;
+                            background: rgba(0,0,0,0.5);
+                            justify-content: center;
+                            align-items: center;
+                            z-index: 1000;
+                        ">
+                            <div style="
+                                background: white;
+                                padding: 12px 15px;
+                                border-radius: 8px;
+                                max-width: 320px;
+                                width: 90%;
+                                position: relative;
+                                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                                font-size: 13px;
+                            ">
+                                <span id="closeModal" style="
+                                    position: absolute;
+                                    top: 6px;
+                                    right: 10px;
+                                    font-size: 20px;
+                                    cursor: pointer;
+                                    color: #666;
+                                ">&times;</span>
+
+                                <h2 style="margin-bottom: 8px; font-size: 16px;"> Your Review</h2>
+                                <form id="reviewForm" method="POST" action="">
+
+                                    {% csrf_token %}
+
+                                    <label for="rating" style="font-size: 13px;">Rating:</label><br>
+
+                                    <!-- Star rating container -->
+                                    <div id="star-rating" style="font-size: 25px; color: lightgray; cursor: pointer; user-select: none; margin-top: 5px; text-align: center;">
+                                        <span data-value="1" class="star">&#9733;</span>
+                                        <span data-value="2" class="star">&#9733;</span>
+                                        <span data-value="3" class="star">&#9733;</span>
+                                        <span data-value="4" class="star">&#9733;</span>
+                                        <span data-value="5" class="star">&#9733;</span>
+                                    </div>
+
+                                    <!-- Hidden input to store selected rating value -->
+                                    <input type="hidden" name="rating" id="rating" required>
+
+                                    <label for="text" style="margin-top: 12px; display: block; font-size: 13px;">Review:</label>
+                                    <textarea id="text" name="review_text" rows="3" placeholder="Write your review here..." style="width: 100%; padding: 6px; margin-top: 4px; font-size: 13px;" required></textarea>
+
+                                    <div style="margin-top: 15px; text-align: right;">
+                                        <button type="button" id="cancelBtn" style="
+                                        background: #ccc;
+                                        border: none;
+                                        padding: 6px 12px;
+                                        border-radius: 6px;
+                                        cursor: pointer;
+                                        margin-right: 8px;
+                                        font-size: 13px;
+                                        ">Cancel</button>
+
+                                        <button type="submit" style="
+                                        background: tomato;
+                                        color: white;
+                                        border: none;
+                                        padding: 6px 12px;
+                                        border-radius: 6px;
+                                        cursor: pointer;
+                                        font-size: 13px;
+                                        ">Submit Review</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <script>
+                        const modal = document.getElementById('modal');
+                        const openBtn = document.getElementById('openModal');
+                        const closeBtn = document.getElementById('closeModal');
+                        const cancelBtn = document.getElementById('cancelBtn');
+
+                        openBtn.addEventListener('click', e => {
+                            e.preventDefault();
+                            modal.style.display = 'flex';
+                        });
+
+                        closeBtn.addEventListener('click', () => {
+                            modal.style.display = 'none';
+                        });
+
+                        cancelBtn.addEventListener('click', () => {
+                            modal.style.display = 'none';
+                        });
+
+                        window.addEventListener('click', e => {
+                            if (e.target === modal) {
+                                modal.style.display = 'none';
+                            }
+                        });
+
+                        // Star rating logic
+                        const stars = document.querySelectorAll('#star-rating .star');
+                        const ratingInput = document.getElementById('rating');
+                        let selectedRating = 0;
+
+                        stars.forEach((star, idx) => {
+                            star.addEventListener('mouseover', () => {
+                                highlightStars(idx + 1);
+                            });
+                            star.addEventListener('mouseout', () => {
+                                highlightStars(selectedRating);
+                            });
+                            star.addEventListener('click', () => {
+                                selectedRating = idx + 1;
+                                ratingInput.value = selectedRating;
+                                highlightStars(selectedRating);
+                            });
+                        });
+
+                        function highlightStars(rating) {
+                            stars.forEach((star, i) => {
+                                star.style.color = (i < rating) ? 'tomato' : 'lightgray';
+                            });
+                        }
+                        </script>
+
+
+                        <!-- User Reviews -->
+                        <div class="sidebar__item ">
+                            <div class="latest-product__text">
+                                <h4 class="text-muted mt-5">Top reviews</h4>
+                                <div class="latest-product__slider owl-carousel">
+                                <div class="latest-prdouct__slider__item">
+                                 {% for user_review in comments %}
+                                    <a href="{% url 'user_details' user_review.user_profile.username %}" class="latest-product__item"
+                                    style="background-color: #f0f0f0; padding: 1% 1.5%; border-radius: 10px; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 1rem; font-size: 0.85rem;">
+
+                                        <!-- Profile Image -->
+                                        <div class="latest-product__item__pic " style="flex-shrink: 0; margin-left:0.5rem;">
+                                            {% if user_review.user_avatar %}
+                                                <img src="{{ user_review.user_avatar }}" alt="{{ user_review.user_name }}"
+                                                    style="border-radius: 50%; width: 45px; height: 45px; object-fit: cover;">
+                                            {% else %}
+                                                <img src="{% static 'images/default.jpg' %}" alt="Default Profile"
+                                                    style="border-radius: 50%; width: 45px; height: 45px; object-fit: cover;">
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Text Info -->
+                                        <div class="latest-product__item__text" style="flex: 1;">
+                                            <h6 style="font-size: 0.75rem; margin-bottom: 0.15rem;">{{ user_review.user_name }}</h6>
+
+                                            <!-- Per-Review Star Rating -->
+                                            <div style="font-size: 0.55rem; color: #555; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                {% for i in "12345" %}
+                                                    {% if user_review.rating|floatformat:1 >= i|add:"0"|floatformat:1 %}
+                                                        <i class="fas fa-star" style="color: tomato;"></i>
+                                                    {% elif user_review.rating|floatformat:1 >= i|add:"-0.5"|floatformat:1 %}
+                                                        <i class="fas fa-star-half-alt" style="color: tomato;"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star" style="color: lightgray;"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <span style="font-size: 0.6rem; color: #333; font-weight: 600;">
+                                                    ({{ user_review.rating }}/5)
+                                                </span>
+                                            </div>
+
+                                            <p class="mb-0" style="font-size: 0.8rem; margin-top: 0.25rem;">
+                                                {{ user_review.text|truncatewords:5 }}
+                                            </p>
+
+                                        </div>
+                                    </a>
+                                    {% endfor %}
+
+
+                                </div>
+                            </div>
+                        </div>
+                        
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-9 col-md-7">
+                                    
+                    <div class="product__discount p-3" style="font-size: 0.85rem;">
+                        
+                        <div class="filter__item">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-5">
+                                        <form method="get" id="sortForm">
+                                            <div class="filter__sort">
+                                                <span>Sort By:</span>
+                                                <select name="sort_by" class="form-select text-muted" onchange="document.getElementById('sortForm').submit();">
+                                                    <option value="default" {% if request.GET.sort_by == "default" %}selected{% endif %}>Default</option>
+                                                    <option value="latest" {% if request.GET.sort_by == "latest" %}selected{% endif %}>Latest</option>
+                                                    <option value="price_low_high" {% if request.GET.sort_by == "price_low_high" %}selected{% endif %}>Price: Low to High</option>
+                                                    <option value="price_high_low" {% if request.GET.sort_by == "price_high_low" %}selected{% endif %}>Price: High to Low</option>
+                                                    <option value="name_asc" {% if request.GET.sort_by == "name_asc" %}selected{% endif %}>Name: A to Z</option>
+                                                    <option value="name_desc" {% if request.GET.sort_by == "name_desc" %}selected{% endif %}>Name: Z to A</option>
+                                                    <option value="random" {% if request.GET.sort_by == "random" %}selected{% endif %}>Random</option>
+                                                    <option value="oldest" {% if request.GET.sort_by == "oldest" %}selected{% endif %}>Oldest</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-4">
+                                        <div class="filter__found">
+                                            <h6><span>{{ combined_count }}</span> Products found</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-3">
+                                        <div class="filter__option">
+                                            <span class="icon_grid-2x2 active" id="listViewBtn" title="List View"></span>
+                                            <span class="icon_ul " id="gridViewBtn" title="Grid View"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+
+                                        
+                    <div class="row product-list-view list-view" id="productContainer">
+                        {% for item in all_listings %}
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="product__item">
+                                <div class="product__item__pic">
+                                    {% if item.image1 %}
+                                        <img src="{{ item.image1.url }}" alt="{{ item.title }}" class="img-fluid">
+                                    {% else %}
+                                        <img src="{% static 'images/default_product.jpg' %}" alt="No image" class="img-fluid">
+                                    {% endif %}
+
+                                    <ul class="product__item__pic__hover">
+                                        <li>
+                                            {% if user.is_authenticated %}
+                                                <div 
+                                                    hx-get="{% url 'toggle_wishlist' item|model_name item.id %}"
+                                                    hx-trigger="click"
+                                                    hx-target="this"
+                                                    hx-swap="outerHTML"
+                                                    style="cursor: pointer;">
+                                                    {% if item.in_wishlist %}
+                                                        <i class="fa fa-heart" style="color: red;"></i>
+                                                    {% else %}
+                                                        <i class="fa fa-heart-o" style="color: black;"></i>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                <a href="{% url 'login' %}">
+                                                    <i class="fa fa-heart-o" style="color: black;"></i>
+                                                </a>
+                                            {% endif %}
+                                        </li>
+
+                                        <li>
+                                            <a href="#" class="share-btn"
+                                            data-title="{{ item.title }}"
+                                            data-url="{% url 'generic_product_detail' model_name=item|model_name pk=item.id %}">
+                                                <i class="fa fa-share-alt"></i>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a href="{% url 'generic_product_detail' model_name=item|model_name pk=item.id %}">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="product__item__text">
+                                    <h5 title="{{ item.title }}">{{ item.title|truncatechars:40 }}</h5>
+                                    <h6>
+                                        {{ country_currency }}{{ item.discount_price }}
+                                        <del style="color: #999; margin-left: 8px;">{{ country_currency }}{{ item.real_price }}</del>
+                                    </h6>
+
+                                    <!-- Grid-only extra info -->
+                                    <div class="extra-details-in-grid">
+                                        <span><i class="fa fa-eye" style="margin-right: 4px; color: #555;"></i><strong>Views:</strong> {{ item.views }}</span>
+                                        <span><i class="fa fa-map-marker-alt" style="margin-right: 4px; color: #555;"></i><strong>Address:</strong> {{ item.address }}</span>
+                                        <span><i class="fa fa-info-circle" style="margin-right: 4px; color: #555;"></i><strong>Status:</strong> {{ item.status|underscore_to_space }}</span>
+                                        <span><i class="fa fa-check-circle" style="margin-right: 4px; color: #555;"></i><strong>Condition:</strong> {{ item.condition|underscore_to_space }}</span>
+                                        {% if item.brand %}
+                                            <span><i class="fa fa-tag" style="margin-right: 4px; color: #555;"></i><strong>Brand:</strong> {{ item.brand|underscore_to_space }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p style="text-align: center; padding: 40px 20px; margin: 30px auto; max-width: 500px; font-size: 20px; font-weight: 600; color: gray; border-radius: 12px;">
+                            😕 No listings found.
+                        </p>
+                        {% endfor %}
+                    </div>
+                    <!-- ✅ Styles -->
+                    <style>
+                        .extra-details-in-grid {
+                            display: none;
+                            font-size: 13px;
+                            color: #555;
+                            margin-top: 10px;
+                            flex-wrap: wrap;
+                            gap: 10px;
+                        }
+
+                        .grid-view .extra-details-in-grid {
+                            display: flex;
+                        }
+
+                        .extra-details-in-grid span {
+                            display: inline-block;
+                            white-space: nowrap;
+                            background: #f8f8f8;
+                            padding: 4px 8px;
+                            border-radius: 6px;
+                        }
+
+
+                    @media (max-width: 768px) {
+                        /* Image styling for mobile & tablet */
+                        .product__item__pic img {
+                            max-height: 130px;
+                            object-fit: cover;
+                            margin-bottom: 2px !important; /* reduce bottom space */
+                        }
+
+                        /* Adjust icon area styling */
+                        .product__item__pic__hover {
+                            margin-top: 0 !important; /* remove top margin */
+                            padding-top: 0 !important;
+                            gap: 4px; /* space between icons */
+                        }
+
+                        /* Adjust icons themselves */
+                        .product__item__pic__hover li {
+                            font-size: 12px;
+                            margin: 0;
+                        }
+
+                        /* Text size adjustments */
+                        .product__item__text h5 {
+                            font-size: 14px;
+                        }
+
+                        .product__item__text h6 {
+                            font-size: 13px;
+                        }
+
+                        .extra-details-in-grid span {
+                            font-size: 11px;
+                        }
+
+                        .product__item {
+                            padding: 1px;
+                        }
+                    }
+
+
+                    </style>
+
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const gridBtn = document.getElementById('gridViewBtn');
+                        const listBtn = document.getElementById('listViewBtn');
+                        const container = document.getElementById('productContainer');
+
+                        // Default to list view
+                        container.classList.add('list-view');
+                        container.classList.remove('grid-view');
+                        listBtn.classList.add('active');
+                        gridBtn.classList.remove('active');
+
+                        gridBtn.addEventListener('click', () => {
+                            container.classList.add('grid-view');
+                            container.classList.remove('list-view');
+                            gridBtn.classList.add('active');
+                            listBtn.classList.remove('active');
+                        });
+
+                        listBtn.addEventListener('click', () => {
+                            container.classList.remove('grid-view');
+                            container.classList.add('list-view');
+                            listBtn.classList.add('active');
+                            gridBtn.classList.remove('active');
+                        });
+                    });
+
+                    </script>
+
+
+                    <div class="product__pagination">
+                        {% if All_listening.has_previous %}
+                            <a href="?page={{ All_listening.previous_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">&laquo;</a>
+                        {% endif %}
+
+                        {% for num in All_listening.paginator.page_range %}
+                            {% if num == 1 or num == All_listening.paginator.num_pages or num >= All_listening.number|add:-1 and num <= All_listening.number|add:1 %}
+                                {% if num == All_listening.number %}
+                                    <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}" style="background-color: tomato; color: white; font-weight: bold;">{{ num }}</a>
+                                {% else %}
+                                    <a href="?page={{ num }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">{{ num }}</a>
+                                {% endif %}
+                            {% elif num == All_listening.number|add:-2 or num == All_listening.number|add:2 %}
+                                <span style="padding: 8px 12px;">...</span>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if All_listening.has_next %}
+                            <a href="?page={{ All_listening.next_page_number }}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}">&raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Product Section End -->
+{% endblock %}
